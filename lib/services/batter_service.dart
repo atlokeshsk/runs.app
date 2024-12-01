@@ -64,4 +64,10 @@ class BatterService {
     );
     return newbatter;
   }
+
+  Future<void> deleteBatter(int id) async {
+    await _isar.writeTxn(() async {
+      await _isar.batters.delete(id);
+    });
+  }
 }

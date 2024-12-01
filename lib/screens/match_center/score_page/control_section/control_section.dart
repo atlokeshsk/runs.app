@@ -84,7 +84,7 @@ class MainButtonSection extends StatelessWidget {
         crossAxisCount: 5,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 10,
+        crossAxisSpacing: 7,
         mainAxisSpacing: 10,
         childAspectRatio: 1.5,
         children: [
@@ -107,7 +107,7 @@ class MainButtonSection extends StatelessWidget {
             modifier: Modifier.wide,
           ),
           ModifierButtons(label: 'NB', modifier: Modifier.noball),
-          // RunsButton(runs: 12345, label: '1234')
+          UndoButton(),
         ],
       ),
     );
@@ -580,6 +580,36 @@ class SelectStriker extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class UndoButton extends StatelessWidget {
+  const UndoButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final score = context.read<Score>();
+    final match = score.match.value!;
+    final scoreService = context.read<ScoreService>();
+
+    return TextButton(
+      onPressed: () async {
+        if (match.score.length == 1) {
+          return;
+        }
+        await scoreService.undoScore(score: score);
+      },
+      child: Text(
+        'Undo',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

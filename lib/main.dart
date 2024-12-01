@@ -19,6 +19,7 @@ void main() async {
 
   scoreService.scoreboardService = scoreboardServie;
   scoreService.batterService = batterService;
+  scoreService.ballService = ballService;
 
   runApp(
     MultiProvider(

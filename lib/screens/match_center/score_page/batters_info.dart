@@ -107,9 +107,6 @@ class BatterRow extends StatelessWidget {
           .read<BatterService>()
           .entryExists(playerId: player.id, matchId: score.match.value!.id),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Show a loading indicator while waiting
-        }
         final batter = snapshot.data;
         return GestureDetector(
           onTap: () async {

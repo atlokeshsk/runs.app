@@ -52,6 +52,12 @@ const BallSchema = CollectionSchema(
       target: r'Player',
       single: true,
     ),
+    r'match': LinkSchema(
+      id: 2416955156036475131,
+      name: r'match',
+      target: r'Match',
+      single: true,
+    ),
     r'score': LinkSchema(
       id: 3857592244067700110,
       name: r'score',
@@ -154,12 +160,13 @@ Id _ballGetId(Ball object) {
 }
 
 List<IsarLinkBase<dynamic>> _ballGetLinks(Ball object) {
-  return [object.player, object.score];
+  return [object.player, object.match, object.score];
 }
 
 void _ballAttach(IsarCollection<dynamic> col, Id id, Ball object) {
   object.id = id;
   object.player.attach(col, col.isar.collection<Player>(), r'player', id);
+  object.match.attach(col, col.isar.collection<Match>(), r'match', id);
   object.score.attach(col, col.isar.collection<Score>(), r'score', id);
 }
 
@@ -666,6 +673,18 @@ extension BallQueryLinks on QueryBuilder<Ball, Ball, QFilterCondition> {
   QueryBuilder<Ball, Ball, QAfterFilterCondition> playerIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'player', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> match(FilterQuery<Match> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'match');
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> matchIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'match', 0, true, 0, true);
     });
   }
 

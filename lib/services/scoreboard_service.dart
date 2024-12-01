@@ -40,4 +40,10 @@ class ScoreboardService {
           .deleteAll();
     });
   }
+
+  Future<void> deleteScorebaord(int id) async {
+    await _isar.writeTxn(() async {
+      await _isar.scoreBoards.delete(id);
+    });
+  }
 }

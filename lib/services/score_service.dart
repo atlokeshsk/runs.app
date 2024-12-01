@@ -10,6 +10,7 @@ class ScoreService {
 
   late final ScoreboardService _scoreboardService;
   late final BatterService _batterService;
+  late final BallService _ballService;
 
   set scoreboardService(ScoreboardService scoreboardService) {
     _scoreboardService = scoreboardService;
@@ -17,6 +18,10 @@ class ScoreService {
 
   set batterService(BatterService batterService) {
     _batterService = batterService;
+  }
+
+  set ballService(BallService ballService) {
+    _ballService = ballService;
   }
 
   // Create the new score for the match and add the match  to the score.
@@ -85,7 +90,8 @@ class ScoreService {
     final match = score.match.value!;
     final newscore = score.copyWith();
     final striker = score.striker.value!;
-    late final Batter newbatter;
+    Batter? newbatter;
+    final ball = Ball();
 
     if (type != RunButtonType.wide) {
       newbatter = await _batterService.getBatter(player: striker, match: match);
@@ -93,10 +99,6 @@ class ScoreService {
 
     // add the newscore to db.
     await _isar.writeTxn(() async {
-      await _isar.scores.put(newscore);
-      await newscore.match.save();
-      await newscore.playersOnCrease.save();
-
       // adding the scoreboard entry.
       final scoreboardEntryExists =
           await _scoreboardService.entryExists(player: striker, match: match);
@@ -108,55 +110,101 @@ class ScoreService {
           position: newscore.nextBattingPostion++,
         );
         newscore.socreboard.value = scoreboard;
-        await newscore.socreboard.save();
       }
-      await newscore.socreboard.save();
-      // scoreboard entry compled
 
-      final ball = Ball();
+      // scoreboard entry compled
 
       switch (type) {
         case RunButtonType.runs:
-          newscore.addRuns(runs: runs);
           newscore.oversCompleted++;
-
           ball.ballType = BallType.runs;
-          ball.addNameandContent(runs: runs, type: type);
-
-          ball.player.value = striker;
-
-          newbatter.addRuns(runs: runs);
+          newbatter!.addRuns(runs: runs);
           newbatter.balls++;
-          await _isar.batters.put(newbatter);
-          newscore.batter.value = newbatter;
 
         case RunButtonType.wide:
-          newscore.addRuns(runs: runs);
           newscore.extras++;
           newscore.wide++;
+          newscore.runs++;
+          ball.ballType = BallType.wide;
+
         case RunButtonType.byes:
-        // TODO: Handle this case.
+          newscore.oversCompleted++;
+          newscore.extras++;
+          ball.ballType = BallType.runs;
+          newbatter!.balls++;
+          newbatter.dots++;
+
         case RunButtonType.legbyes:
-        // TODO: Handle this case.
+          newscore.oversCompleted++;
+          newscore.extras++;
+          ball.ballType = BallType.runs;
+          newbatter!.balls++;
+          newbatter.dots++;
+
         case RunButtonType.noball:
-        // TODO: Handle this case.
+          newscore.extras++;
+          newscore.noball++;
+          ball.ballType = BallType.noball;
+          newbatter!.addRuns(runs: runs);
+          newbatter.balls++;
+
         case RunButtonType.noballByes:
-        // TODO: Handle this case.
+          newscore.extras++;
+          newscore.noball++;
+          ball.ballType = BallType.noballBye;
+          newbatter!.balls++;
+          newbatter.dots++;
+
         case RunButtonType.noballLegByes:
-        // TODO: Handle this case.
+          newscore.extras++;
+          newscore.noball++;
+          ball.ballType = BallType.noballLegbye;
+          newbatter!.balls++;
+          newbatter.dots++;
       }
-
+      if (newbatter != null) {
+        await _isar.batters.put(newbatter);
+      }
       // add the ball related stuff.
+      ball.match.value = match;
       ball.over = newscore.oversCompleted;
+      ball.addNameandContent(runs: runs, type: type);
+      ball.player.value = striker;
       await _isar.balls.put(ball);
-      ball.player.value = score.striker.value;
       await ball.player.save();
+      await ball.match.save();
 
-      // update ther striker
-      newscore.ball.value = ball;
-      await newscore.ball.save();
-      await newscore.updateStriker(striker: striker, runs: runs);
-      await _isar.scores.put(newscore);
+      newscore.addRuns(runs: runs);
+      newscore.batter.value = newbatter; // batter
+      newscore.ball.value = ball; // ball
+      await _isar.scores.put(newscore); // putting.
+
+      await newscore.match.save(); // match save save.
+      await newscore.playersOnCrease.save(); // match save
+      await newscore.ball.save(); //ball save
+      await newscore.batter.save(); // batter save
+      await newscore.socreboard.save(); // object save
+      await newscore.updateStriker(
+          striker: striker, runs: runs, previousOver: score.oversCompleted);
+    });
+  }
+
+  Future<void> undoScore({required Score score}) async {
+    final ball = score.ball.value;
+    final batter = score.batter.value;
+    final scoreboard = score.socreboard.value;
+
+    if (ball != null) {
+      await _ballService.deleteBall(ball.id);
+    }
+    if (batter != null) {
+      await _batterService.deleteBatter(batter.id);
+    }
+    if (scoreboard != null) {
+      await _scoreboardService.deleteScorebaord(scoreboard.id);
+    }
+    await _isar.writeTxn(() async {
+      await _isar.scores.delete(score.id);
     });
   }
 }

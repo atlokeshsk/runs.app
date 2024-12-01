@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/screens/match_center/score_page/control_section/control_section_provider.dart';
+import 'package:runs/screens/match_center/score_page/recent_balls.dart';
 import 'package:runs/services/services.dart';
 
 import 'batters_info.dart';
@@ -33,11 +34,13 @@ class ScorePage extends StatelessWidget {
               case ConnectionState.waiting:
                 return const Center(child: CircularProgressIndicator());
               case ConnectionState.active:
-              
-              // Use addPostFrameCallback to reset ControlSectionState
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.read<ControlSectionState>().changeSection(Control.mainMenu);
-              });
+
+                // Use addPostFrameCallback to reset ControlSectionState
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  context
+                      .read<ControlSectionState>()
+                      .changeSection(Control.mainMenu);
+                });
                 final score = snapshot.data![0];
                 final match = score.match.value!;
                 return Provider<Score>.value(
@@ -65,12 +68,13 @@ class ScorePage extends StatelessWidget {
                           ),
                         ),
                       ),
+                      RecentBalls(),
                       // Buttons Need to added.
                       ControlSection(),
                     ],
                   ),
                 );
-      
+
               case ConnectionState.done:
                 return const Center(child: Text('Done'));
             }

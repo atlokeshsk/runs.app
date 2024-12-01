@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/screens/match_center/score_page/control_section/control_section.dart';
@@ -21,6 +20,8 @@ class Ball {
   late BallType ballType;
 
   final player = IsarLink<Player>();
+
+  final match = IsarLink<Match>();
 
   @Backlink(to: 'ball')
   final score = IsarLink<Score>();

@@ -111,11 +111,27 @@ class Score {
   }
 
   Future<void> updateStriker(
-      {required Player striker, required Runs runs}) async {
+      {required Player striker,
+      required Runs runs,
+      required int previousOver}) async {
+    // this for noball wide extras.
+    if (this.oversCompleted == previousOver) {
+      if (getRuns(runs) % 2 != 0) {
+        for (final player in playersOnCrease) {
+          if (player.id != striker.id) {
+            this.striker.value = player;
+            break;
+          }
+        }
+      } else {
+        this.striker.value = striker;
+      }
+    }
     // change the striker if the runs is odd and not last ball.
-    if (getRuns(runs) % 2 != 0 && oversCompleted % 6 != 0) {
+    else if (getRuns(runs) % 2 != 0 && oversCompleted % 6 != 0) {
       for (final player in playersOnCrease) {
         if (player.id != striker.id) {
+          print(player.name);
           this.striker.value = player;
           break;
         }
@@ -124,14 +140,14 @@ class Score {
       for (final player in playersOnCrease) {
         if (player.id != striker.id) {
           this.striker.value = player;
+
           break;
         }
       }
     } else {
       this.striker.value = striker;
     }
-
-    await this.striker.save();
+    await this.striker.save(); // save striker.
   }
 
   @override
