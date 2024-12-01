@@ -96,14 +96,14 @@ Ball _ballDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Ball(
-    ballType: _BallballTypeValueEnumMap[reader.readByteOrNull(offsets[0])] ??
-        BallType.runs,
-    content: reader.readString(offsets[1]),
-    name: reader.readString(offsets[2]),
-    over: reader.readLong(offsets[3]),
-  );
+  final object = Ball();
+  object.ballType =
+      _BallballTypeValueEnumMap[reader.readByteOrNull(offsets[0])] ??
+          BallType.runs;
+  object.content = reader.readString(offsets[1]);
   object.id = id;
+  object.name = reader.readString(offsets[2]);
+  object.over = reader.readLong(offsets[3]);
   return object;
 }
 
@@ -134,7 +134,9 @@ const _BallballTypeEnumValueMap = {
   'six': 2,
   'wide': 3,
   'noball': 4,
-  'wicket': 5,
+  'noballLegbye': 5,
+  'noballBye': 6,
+  'wicket': 7,
 };
 const _BallballTypeValueEnumMap = {
   0: BallType.runs,
@@ -142,7 +144,9 @@ const _BallballTypeValueEnumMap = {
   2: BallType.six,
   3: BallType.wide,
   4: BallType.noball,
-  5: BallType.wicket,
+  5: BallType.noballLegbye,
+  6: BallType.noballBye,
+  7: BallType.wicket,
 };
 
 Id _ballGetId(Ball object) {

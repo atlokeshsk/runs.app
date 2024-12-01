@@ -15,10 +15,10 @@ class ScoreboardService {
     await scoreboard.player.save();
     scoreboard.match.value = match;
     await scoreboard.match.save();
-    await _isar.scoreBoards.put(scoreboard);
     return scoreboard;
   }
 
+  // returs true if enty exits.
   Future<bool> entryExists(
       {required Player player, required Match match}) async {
     return await _isar.scoreBoards

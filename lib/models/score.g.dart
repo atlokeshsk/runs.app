@@ -17,59 +17,74 @@ const ScoreSchema = CollectionSchema(
   name: r'Score',
   id: -357457489503241584,
   properties: {
-    r'dots': PropertySchema(
+    r'datetime': PropertySchema(
       id: 0,
+      name: r'datetime',
+      type: IsarType.dateTime,
+    ),
+    r'dots': PropertySchema(
+      id: 1,
       name: r'dots',
       type: IsarType.long,
     ),
     r'extras': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'extras',
       type: IsarType.long,
     ),
     r'fours': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'fours',
       type: IsarType.long,
     ),
     r'nextBattingPostion': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'nextBattingPostion',
       type: IsarType.long,
     ),
+    r'noball': PropertySchema(
+      id: 5,
+      name: r'noball',
+      type: IsarType.long,
+    ),
     r'ones': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'ones',
       type: IsarType.long,
     ),
     r'oversCompleted': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'oversCompleted',
       type: IsarType.long,
     ),
     r'runs': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'runs',
       type: IsarType.long,
     ),
     r'sixes': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'sixes',
       type: IsarType.long,
     ),
     r'threes': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'threes',
       type: IsarType.long,
     ),
     r'twos': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'twos',
       type: IsarType.long,
     ),
     r'wicketsFall': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'wicketsFall',
+      type: IsarType.long,
+    ),
+    r'wide': PropertySchema(
+      id: 13,
+      name: r'wide',
       type: IsarType.long,
     )
   },
@@ -114,7 +129,7 @@ const ScoreSchema = CollectionSchema(
       id: 4423202444091048867,
       name: r'socreboard',
       target: r'ScoreBoard',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -139,17 +154,20 @@ void _scoreSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.dots);
-  writer.writeLong(offsets[1], object.extras);
-  writer.writeLong(offsets[2], object.fours);
-  writer.writeLong(offsets[3], object.nextBattingPostion);
-  writer.writeLong(offsets[4], object.ones);
-  writer.writeLong(offsets[5], object.oversCompleted);
-  writer.writeLong(offsets[6], object.runs);
-  writer.writeLong(offsets[7], object.sixes);
-  writer.writeLong(offsets[8], object.threes);
-  writer.writeLong(offsets[9], object.twos);
-  writer.writeLong(offsets[10], object.wicketsFall);
+  writer.writeDateTime(offsets[0], object.datetime);
+  writer.writeLong(offsets[1], object.dots);
+  writer.writeLong(offsets[2], object.extras);
+  writer.writeLong(offsets[3], object.fours);
+  writer.writeLong(offsets[4], object.nextBattingPostion);
+  writer.writeLong(offsets[5], object.noball);
+  writer.writeLong(offsets[6], object.ones);
+  writer.writeLong(offsets[7], object.oversCompleted);
+  writer.writeLong(offsets[8], object.runs);
+  writer.writeLong(offsets[9], object.sixes);
+  writer.writeLong(offsets[10], object.threes);
+  writer.writeLong(offsets[11], object.twos);
+  writer.writeLong(offsets[12], object.wicketsFall);
+  writer.writeLong(offsets[13], object.wide);
 }
 
 Score _scoreDeserialize(
@@ -159,18 +177,21 @@ Score _scoreDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Score(
-    dots: reader.readLong(offsets[0]),
-    extras: reader.readLong(offsets[1]),
-    fours: reader.readLong(offsets[2]),
-    nextBattingPostion: reader.readLong(offsets[3]),
-    ones: reader.readLong(offsets[4]),
-    oversCompleted: reader.readLong(offsets[5]),
-    runs: reader.readLong(offsets[6]),
-    sixes: reader.readLong(offsets[7]),
-    threes: reader.readLong(offsets[8]),
-    twos: reader.readLong(offsets[9]),
-    wicketsFall: reader.readLong(offsets[10]),
+    dots: reader.readLong(offsets[1]),
+    extras: reader.readLong(offsets[2]),
+    fours: reader.readLong(offsets[3]),
+    nextBattingPostion: reader.readLong(offsets[4]),
+    noball: reader.readLong(offsets[5]),
+    ones: reader.readLong(offsets[6]),
+    oversCompleted: reader.readLong(offsets[7]),
+    runs: reader.readLong(offsets[8]),
+    sixes: reader.readLong(offsets[9]),
+    threes: reader.readLong(offsets[10]),
+    twos: reader.readLong(offsets[11]),
+    wicketsFall: reader.readLong(offsets[12]),
+    wide: reader.readLong(offsets[13]),
   );
+  object.datetime = reader.readDateTime(offsets[0]);
   object.id = id;
   return object;
 }
@@ -183,7 +204,7 @@ P _scoreDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
@@ -203,6 +224,12 @@ P _scoreDeserializeProp<P>(
     case 9:
       return (reader.readLong(offset)) as P;
     case 10:
+      return (reader.readLong(offset)) as P;
+    case 11:
+      return (reader.readLong(offset)) as P;
+    case 12:
+      return (reader.readLong(offset)) as P;
+    case 13:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -312,6 +339,59 @@ extension ScoreQueryWhere on QueryBuilder<Score, Score, QWhereClause> {
 }
 
 extension ScoreQueryFilter on QueryBuilder<Score, Score, QFilterCondition> {
+  QueryBuilder<Score, Score, QAfterFilterCondition> datetimeEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> datetimeGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> datetimeLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> datetimeBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'datetime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterFilterCondition> dotsEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -566,6 +646,58 @@ extension ScoreQueryFilter on QueryBuilder<Score, Score, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'nextBattingPostion',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> noballEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'noball',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> noballGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'noball',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> noballLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'noball',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> noballBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'noball',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -939,6 +1071,58 @@ extension ScoreQueryFilter on QueryBuilder<Score, Score, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> wideEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'wide',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> wideGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'wide',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> wideLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'wide',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> wideBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'wide',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension ScoreQueryObject on QueryBuilder<Score, Score, QFilterCondition> {}
@@ -1063,57 +1247,26 @@ extension ScoreQueryLinks on QueryBuilder<Score, Score, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'socreboard', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardIsEmpty() {
+  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'socreboard', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'socreboard', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'socreboard', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'socreboard', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'socreboard', lower, includeLower, upper, includeUpper);
     });
   }
 }
 
 extension ScoreQuerySortBy on QueryBuilder<Score, Score, QSortBy> {
+  QueryBuilder<Score, Score, QAfterSortBy> sortByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByDatetimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.desc);
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterSortBy> sortByDots() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dots', Sort.asc);
@@ -1159,6 +1312,18 @@ extension ScoreQuerySortBy on QueryBuilder<Score, Score, QSortBy> {
   QueryBuilder<Score, Score, QAfterSortBy> sortByNextBattingPostionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nextBattingPostion', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByNoball() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'noball', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByNoballDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'noball', Sort.desc);
     });
   }
 
@@ -1245,9 +1410,33 @@ extension ScoreQuerySortBy on QueryBuilder<Score, Score, QSortBy> {
       return query.addSortBy(r'wicketsFall', Sort.desc);
     });
   }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByWide() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wide', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByWideDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wide', Sort.desc);
+    });
+  }
 }
 
 extension ScoreQuerySortThenBy on QueryBuilder<Score, Score, QSortThenBy> {
+  QueryBuilder<Score, Score, QAfterSortBy> thenByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByDatetimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.desc);
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterSortBy> thenByDots() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dots', Sort.asc);
@@ -1305,6 +1494,18 @@ extension ScoreQuerySortThenBy on QueryBuilder<Score, Score, QSortThenBy> {
   QueryBuilder<Score, Score, QAfterSortBy> thenByNextBattingPostionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nextBattingPostion', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByNoball() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'noball', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByNoballDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'noball', Sort.desc);
     });
   }
 
@@ -1391,9 +1592,27 @@ extension ScoreQuerySortThenBy on QueryBuilder<Score, Score, QSortThenBy> {
       return query.addSortBy(r'wicketsFall', Sort.desc);
     });
   }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByWide() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wide', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByWideDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wide', Sort.desc);
+    });
+  }
 }
 
 extension ScoreQueryWhereDistinct on QueryBuilder<Score, Score, QDistinct> {
+  QueryBuilder<Score, Score, QDistinct> distinctByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'datetime');
+    });
+  }
+
   QueryBuilder<Score, Score, QDistinct> distinctByDots() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dots');
@@ -1415,6 +1634,12 @@ extension ScoreQueryWhereDistinct on QueryBuilder<Score, Score, QDistinct> {
   QueryBuilder<Score, Score, QDistinct> distinctByNextBattingPostion() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'nextBattingPostion');
+    });
+  }
+
+  QueryBuilder<Score, Score, QDistinct> distinctByNoball() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'noball');
     });
   }
 
@@ -1459,12 +1684,24 @@ extension ScoreQueryWhereDistinct on QueryBuilder<Score, Score, QDistinct> {
       return query.addDistinctBy(r'wicketsFall');
     });
   }
+
+  QueryBuilder<Score, Score, QDistinct> distinctByWide() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'wide');
+    });
+  }
 }
 
 extension ScoreQueryProperty on QueryBuilder<Score, Score, QQueryProperty> {
   QueryBuilder<Score, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Score, DateTime, QQueryOperations> datetimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'datetime');
     });
   }
 
@@ -1489,6 +1726,12 @@ extension ScoreQueryProperty on QueryBuilder<Score, Score, QQueryProperty> {
   QueryBuilder<Score, int, QQueryOperations> nextBattingPostionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'nextBattingPostion');
+    });
+  }
+
+  QueryBuilder<Score, int, QQueryOperations> noballProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'noball');
     });
   }
 
@@ -1531,6 +1774,12 @@ extension ScoreQueryProperty on QueryBuilder<Score, Score, QQueryProperty> {
   QueryBuilder<Score, int, QQueryOperations> wicketsFallProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'wicketsFall');
+    });
+  }
+
+  QueryBuilder<Score, int, QQueryOperations> wideProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'wide');
     });
   }
 }

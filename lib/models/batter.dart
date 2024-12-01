@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:runs/models/models.dart';
+import 'package:runs/screens/match_center/score_page/control_section/control_section.dart';
 
 part 'batter.g.dart';
 
@@ -28,33 +29,45 @@ class Batter {
 
   final match = IsarLink<Match>();
 
-  Batter copyWith({
-    int? runs,
-    int? balls,
-    int? dots,
-    int? ones,
-    int? twos,
-    int? threes,
-    int? fours,
-    int? sixes,
-    DateTime? dateTime,
-    BatterStatus? status,
-    IsarLink<Player>? player,
-    IsarLink<Match>? match,
-  }) {
+  void addRuns({required Runs runs}) {
+    switch (runs) {
+      case Runs.dot:
+        dots++;
+      case Runs.one:
+        this.runs += 1;
+        ones++;
+      case Runs.two:
+        this.runs += 2;
+        twos++;
+      case Runs.three:
+        this.runs += 3;
+        threes++;
+      case Runs.four:
+        this.runs += 4;
+        fours++;
+      case Runs.five:
+        this.runs += 5;
+      case Runs.six:
+        this.runs += 6;
+        sixes++;
+      case Runs.seven:
+        this.runs += 7;
+    }
+  }
+
+  Batter copyWith() {
     return Batter()
-      ..runs = runs ?? this.runs
-      ..balls = balls ?? this.balls
-      ..dots = dots ?? this.dots
-      ..ones = ones ?? this.ones
-      ..twos = twos ?? this.twos
-      ..threes = threes ?? this.threes
-      ..fours = fours ?? this.fours
-      ..sixes = sixes ?? this.sixes
-      ..dateTime = dateTime ?? this.dateTime
-      ..status = status ?? this.status
-      ..player.value = player?.value ?? this.player.value
-      ..match.value = match?.value ?? this.match.value;
+      ..runs = runs
+      ..balls = balls
+      ..dots = dots
+      ..ones = ones
+      ..twos = twos
+      ..threes = threes
+      ..fours = fours
+      ..sixes = sixes
+      ..status = status
+      ..player.value = player.value
+      ..match.value = match.value;
   }
 }
 

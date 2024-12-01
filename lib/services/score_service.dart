@@ -1,11 +1,23 @@
 import 'package:isar/isar.dart';
 import 'package:runs/models/models.dart';
+import 'package:runs/screens/match_center/score_page/control_section/control_section.dart';
 import 'package:runs/services/services.dart';
 
 class ScoreService {
   ScoreService(Isar isar) : _isar = isar;
 
   final Isar _isar;
+
+  late final ScoreboardService _scoreboardService;
+  late final BatterService _batterService;
+
+  set scoreboardService(ScoreboardService scoreboardService) {
+    _scoreboardService = scoreboardService;
+  }
+
+  set batterService(BatterService batterService) {
+    _batterService = batterService;
+  }
 
   // Create the new score for the match and add the match  to the score.
   Future<void> createNewScore({required Match match}) async {
@@ -27,6 +39,7 @@ class ScoreService {
         .match((match) {
           return match.idEqualTo(matchId);
         })
+        .sortByDatetimeDesc()
         .limit(1)
         .watch(fireImmediately: true);
   }
@@ -65,98 +78,85 @@ class ScoreService {
   }
 
   Future<void> addRuns({
-    required int runs,
-    required String label,
-    required bool legbye,
-    required bool bye,
-    required bool wide,
-    required bool noball,
+    required Runs runs,
     required Score score,
-    required ScoreboardService scoreboardService,
-    required BatterService batterService,
+    required RunButtonType type,
   }) async {
-    // Start the write transaction
+    final match = score.match.value!;
+    final newscore = score.copyWith();
+    final striker = score.striker.value!;
+    late final Batter newbatter;
+
+    if (type != RunButtonType.wide) {
+      newbatter = await _batterService.getBatter(player: striker, match: match);
+    }
+
+    // add the newscore to db.
     await _isar.writeTxn(() async {
-      // 1. Get the match
-      final match = score.match.value!;
+      await _isar.scores.put(newscore);
+      await newscore.match.save();
+      await newscore.playersOnCrease.save();
 
-      // 2. Copy the score to the newScore.
-      final newScore = score.copyWith();
+      // adding the scoreboard entry.
+      final scoreboardEntryExists =
+          await _scoreboardService.entryExists(player: striker, match: match);
+      if (!scoreboardEntryExists) {
+        // add the scoreboard entry for the player.
+        final scoreboard = await _scoreboardService.addPlayer(
+          player: striker,
+          match: match,
+          position: newscore.nextBattingPostion++,
+        );
+        newscore.socreboard.value = scoreboard;
+        await newscore.socreboard.save();
+      }
+      await newscore.socreboard.save();
+      // scoreboard entry compled
 
-      // 3. Save the new score to the DB
-      await _isar.scores.put(newScore);
-      await newScore.match.save();
-      await newScore.playersOnCrease.save();
+      final ball = Ball();
 
-      // 4. Check and save the scoreboard entries for players if necessary
-      final player1 = score.playersOnCrease.elementAtOrNull(0);
-      final player2 = score.playersOnCrease.elementAtOrNull(1);
+      switch (type) {
+        case RunButtonType.runs:
+          newscore.addRuns(runs: runs);
+          newscore.oversCompleted++;
 
-      if (player1 != null) {
-        final result =
-            await scoreboardService.entryExists(player: player1, match: match);
-        if (!result) {
-          final scoreboard = await scoreboardService.addPlayer(
-            player: player1,
-            match: match,
-            position: newScore.nextBattingPostion,
-          );
-          newScore.nextBattingPostion++;
-          newScore.socreboard.add(scoreboard);
-        }
+          ball.ballType = BallType.runs;
+          ball.addNameandContent(runs: runs, type: type);
+
+          ball.player.value = striker;
+
+          newbatter.addRuns(runs: runs);
+          newbatter.balls++;
+          await _isar.batters.put(newbatter);
+          newscore.batter.value = newbatter;
+
+        case RunButtonType.wide:
+          newscore.addRuns(runs: runs);
+          newscore.extras++;
+          newscore.wide++;
+        case RunButtonType.byes:
+        // TODO: Handle this case.
+        case RunButtonType.legbyes:
+        // TODO: Handle this case.
+        case RunButtonType.noball:
+        // TODO: Handle this case.
+        case RunButtonType.noballByes:
+        // TODO: Handle this case.
+        case RunButtonType.noballLegByes:
+        // TODO: Handle this case.
       }
 
-      if (player2 != null) {
-        final result =
-            await scoreboardService.entryExists(player: player2, match: match);
-        if (!result) {
-          final scoreboard = await scoreboardService.addPlayer(
-            player: player2,
-            match: match,
-            position: newScore.nextBattingPostion,
-          );
-          newScore.nextBattingPostion++;
-          newScore.socreboard.add(scoreboard);
-        }
-      }
+      // add the ball related stuff.
+      ball.over = newscore.oversCompleted;
+      await _isar.balls.put(ball);
+      ball.player.value = score.striker.value;
+      await ball.player.save();
 
-      // 5. Check if the batter exists
-      final batter = await batterService.entryExists(
-          playerId: score.striker.value!.id, matchId: match.id);
-
-      Batter newBatter;
-      if (batter != null) {
-        newBatter = batter.copyWith();
-      } else {
-        newBatter = Batter();
-        newBatter.player.value = score.striker.value!;
-        newBatter.match.value = match;
-      }
-
-      // Now, save the batter outside the transaction
-      await _isar.batters.put(newBatter);
-      await newBatter.player.save();
-      await newBatter.match.save();
-
-      // 6. Handle runs, wide, and noball logic
-      if (wide || noball) {
-        // Logic for wide/noball if needed
-      } else {
-        newBatter.runs += runs;
-        newBatter.balls++;
-        await _isar.batters.put(newBatter);
-        newScore.batter.value = newBatter;
-
-        // Change the striker if necessary
-        final striker = score.striker.value!;
-        if (striker.id == player1?.id) {
-          newScore.striker.value = player2;
-          await newScore.striker.save();
-        }
-
-        // Save the new score outside the transaction
-        await _isar.scores.put(newScore);
-      }
+      // update ther striker
+      newscore.ball.value = ball;
+      await newscore.ball.save();
+      await newscore.updateStriker(striker: striker, runs: runs);
+      await _isar.scores.put(newscore);
     });
   }
 }

@@ -16,6 +16,10 @@ void main() async {
   final scoreboardServie = ScoreboardService(isarService.isar);
 
   matchService.scoreService = scoreService;
+
+  scoreService.scoreboardService = scoreboardServie;
+  scoreService.batterService = batterService;
+
   runApp(
     MultiProvider(
       providers: [

@@ -167,6 +167,9 @@ class _SelectionListState extends State<SelectionList> {
           score: score, player: player);
     }
     setState(() {});
+    if (score.playersOnCrease.length == 2) {
+      context.pop();
+    }
   }
 
   @override

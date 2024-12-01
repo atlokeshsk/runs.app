@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:runs/screens/match_center/score_page/control_section/control_section.dart';
 import './models.dart';
 
 part 'score.g.dart';
@@ -7,18 +8,21 @@ part 'score.g.dart';
 class Score {
   Id id = Isar.autoIncrement;
 
-  Score(
-      {required this.runs,
-      required this.oversCompleted,
-      required this.wicketsFall,
-      required this.dots,
-      required this.ones,
-      required this.twos,
-      required this.threes,
-      required this.fours,
-      required this.sixes,
-      required this.extras,
-      required this.nextBattingPostion});
+  Score({
+    required this.runs,
+    required this.oversCompleted,
+    required this.wicketsFall,
+    required this.dots,
+    required this.ones,
+    required this.twos,
+    required this.threes,
+    required this.fours,
+    required this.sixes,
+    required this.extras,
+    required this.wide,
+    required this.noball,
+    required this.nextBattingPostion,
+  }) : datetime = DateTime.now();
 
   Score.newScore()
       : this(
@@ -32,6 +36,8 @@ class Score {
           fours: 0,
           sixes: 0,
           extras: 0,
+          wide: 0,
+          noball: 0,
           nextBattingPostion: 0,
         );
 
@@ -45,14 +51,88 @@ class Score {
   int fours;
   int sixes;
   int extras;
+  int wide;
+  int noball;
   int nextBattingPostion;
+  DateTime datetime;
 
   final playersOnCrease = IsarLinks<Player>();
   final striker = IsarLink<Player>();
   final match = IsarLink<Match>();
   final ball = IsarLink<Ball>();
   final batter = IsarLink<Batter>();
-  final socreboard = IsarLinks<ScoreBoard>();
+  final socreboard = IsarLink<ScoreBoard>();
+
+  void addRuns({required Runs runs}) {
+    switch (runs) {
+      case Runs.dot:
+        dots++;
+      case Runs.one:
+        this.runs += 1;
+        ones++;
+      case Runs.two:
+        this.runs += 2;
+        twos++;
+      case Runs.three:
+        this.runs += 3;
+        threes++;
+      case Runs.four:
+        this.runs += 4;
+        fours++;
+      case Runs.five:
+        this.runs += 5;
+      case Runs.six:
+        this.runs += 6;
+        sixes++;
+      case Runs.seven:
+        this.runs += 7;
+    }
+  }
+
+  int getRuns(Runs runs) {
+    switch (runs) {
+      case Runs.dot:
+        return 0;
+      case Runs.one:
+        return 1;
+      case Runs.two:
+        return 2;
+      case Runs.three:
+        return 3;
+      case Runs.four:
+        return 4;
+      case Runs.five:
+        return 5;
+      case Runs.six:
+        return 6;
+      case Runs.seven:
+        return 8;
+    }
+  }
+
+  Future<void> updateStriker(
+      {required Player striker, required Runs runs}) async {
+    // change the striker if the runs is odd and not last ball.
+    if (getRuns(runs) % 2 != 0 && oversCompleted % 6 != 0) {
+      for (final player in playersOnCrease) {
+        if (player.id != striker.id) {
+          this.striker.value = player;
+          break;
+        }
+      }
+    } else if (getRuns(runs) % 2 == 0 && oversCompleted % 6 == 0) {
+      for (final player in playersOnCrease) {
+        if (player.id != striker.id) {
+          this.striker.value = player;
+          break;
+        }
+      }
+    } else {
+      this.striker.value = striker;
+    }
+
+    await this.striker.save();
+  }
 
   @override
   String toString() {
@@ -74,43 +154,23 @@ class Score {
     ''';
   }
 
-  Score copyWith({
-    int? runs,
-    int? oversCompleted,
-    int? wicketsFall,
-    int? dots,
-    int? ones,
-    int? twos,
-    int? threes,
-    int? fours,
-    int? sixes,
-    int? extras,
-    int? nextBattingPostion,
-    IsarLinks<Player>? playersOnCrease,
-    IsarLink<Player>? striker,
-    IsarLink<Match>? match,
-    IsarLink<Ball>? ball,
-    IsarLink<Batter>? batter,
-    IsarLinks<ScoreBoard>? socreboard,
-  }) {
+  Score copyWith() {
     return Score(
-      runs: runs ?? this.runs,
-      oversCompleted: oversCompleted ?? this.oversCompleted,
-      wicketsFall: wicketsFall ?? this.wicketsFall,
-      dots: dots ?? this.dots,
-      ones: ones ?? this.ones,
-      twos: twos ?? this.twos,
-      threes: threes ?? this.threes,
-      fours: fours ?? this.fours,
-      sixes: sixes ?? this.sixes,
-      extras: extras ?? this.extras,
-      nextBattingPostion: nextBattingPostion ?? this.nextBattingPostion,
+      runs: runs,
+      oversCompleted: oversCompleted,
+      wicketsFall: wicketsFall,
+      dots: dots,
+      ones: ones,
+      twos: twos,
+      threes: threes,
+      fours: fours,
+      sixes: sixes,
+      extras: extras,
+      wide: wide,
+      noball: noball,
+      nextBattingPostion: nextBattingPostion,
     )
-      ..playersOnCrease.addAll(playersOnCrease ?? this.playersOnCrease)
-      ..striker.value = striker?.value ?? this.striker.value
-      ..match.value = match?.value ?? this.match.value
-      ..ball.value = ball?.value ?? this.ball.value
-      ..batter.value = batter?.value ?? this.batter.value
-      ..socreboard.addAll(socreboard ?? this.socreboard);
+      ..playersOnCrease.addAll(playersOnCrease)
+      ..match.value = match.value;
   }
 }

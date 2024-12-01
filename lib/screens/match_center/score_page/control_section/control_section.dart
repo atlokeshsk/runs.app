@@ -8,6 +8,27 @@ import 'package:runs/services/services.dart';
 
 import 'control_section_provider.dart';
 
+enum RunButtonType {
+  runs,
+  wide,
+  byes,
+  legbyes,
+  noball,
+  noballByes,
+  noballLegByes,
+}
+
+enum Runs {
+  dot,
+  one,
+  two,
+  three,
+  four,
+  five,
+  six,
+  seven,
+}
+
 class ControlSection extends StatelessWidget {
   const ControlSection({
     super.key,
@@ -67,12 +88,12 @@ class MainButtonSection extends StatelessWidget {
         mainAxisSpacing: 10,
         childAspectRatio: 1.5,
         children: [
-          RunsButton(runs: 1, label: '1'),
-          RunsButton(runs: 2, label: '2'),
-          RunsButton(runs: 3, label: '3'),
-          RunsButton(runs: 4, label: '4'),
-          RunsButton(runs: 6, label: '6'),
-          RunsButton(runs: 0, label: '0'),
+          RunsButton(runs: Runs.one, label: '1', type: RunButtonType.runs),
+          RunsButton(runs: Runs.two, label: '2', type: RunButtonType.runs),
+          RunsButton(runs: Runs.three, label: '3', type: RunButtonType.runs),
+          RunsButton(runs: Runs.four, label: '4', type: RunButtonType.runs),
+          RunsButton(runs: Runs.six, label: '6', type: RunButtonType.runs),
+          RunsButton(runs: Runs.dot, label: '0', type: RunButtonType.runs),
           ModifierButtons(
             label: 'LB',
             modifier: Modifier.legBye,
@@ -86,7 +107,7 @@ class MainButtonSection extends StatelessWidget {
             modifier: Modifier.wide,
           ),
           ModifierButtons(label: 'NB', modifier: Modifier.noball),
-          RunsButton(runs: 12345, label: '1234')
+          // RunsButton(runs: 12345, label: '1234')
         ],
       ),
     );
@@ -98,25 +119,18 @@ class RunsButton extends StatelessWidget {
     super.key,
     required this.runs,
     required this.label,
-    this.legbye = false,
-    this.bye = false,
-    this.wide = false,
-    this.noball = false,
+    required this.type,
   });
 
-  final int runs;
+  final Runs runs;
   final String label;
-  final bool legbye;
-  final bool bye;
-  final bool wide;
-  final bool noball;
+  final RunButtonType type;
 
   @override
   Widget build(BuildContext context) {
     final score = context.read<Score>();
     final scoreService = context.read<ScoreService>();
-    final scoreboardService = context.read<ScoreboardService>();
-    final batterService = context.read<BatterService>();
+
     return TextButton(
       onPressed: () async {
         if (score.oversCompleted == 0 && score.playersOnCrease.isEmpty) {
@@ -131,17 +145,7 @@ class RunsButton extends StatelessWidget {
               .changeSection(Control.selectStriker);
           return;
         }
-        await scoreService.addRuns(
-          runs: runs,
-          label: label,
-          legbye: legbye,
-          bye: bye,
-          wide: wide,
-          noball: noball,
-          score: score,
-          scoreboardService: scoreboardService,
-          batterService: batterService,
-        );
+        await scoreService.addRuns(runs: runs, score: score, type: type);
       },
       child: Text(
         label,
@@ -217,18 +221,25 @@ class LegbyeScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 1, label: '1 LB', legbye: true),
-            RunsButton(runs: 2, label: '2 LB', legbye: true),
-            RunsButton(runs: 3, label: '3 LB', legbye: true),
-            RunsButton(runs: 4, label: '4 LB', legbye: true),
+            RunsButton(
+                runs: Runs.one, label: '1 LB', type: RunButtonType.legbyes),
+            RunsButton(
+                runs: Runs.two, label: '2 LB', type: RunButtonType.legbyes),
+            RunsButton(
+                runs: Runs.three, label: '3 LB', type: RunButtonType.legbyes),
+            RunsButton(
+                runs: Runs.four, label: '4 LB', type: RunButtonType.legbyes),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 5, label: '5 LB', legbye: true),
-            RunsButton(runs: 6, label: '6 LB', legbye: true),
-            RunsButton(runs: 7, label: '7 LB', legbye: true),
+            RunsButton(
+                runs: Runs.five, label: '5 LB', type: RunButtonType.legbyes),
+            RunsButton(
+                runs: Runs.six, label: '6 LB', type: RunButtonType.legbyes),
+            RunsButton(
+                runs: Runs.seven, label: '7 LB', type: RunButtonType.legbyes),
           ],
         ),
       ],
@@ -258,18 +269,39 @@ class NoballLegbyeScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 1, label: '1 LB NB', legbye: true, noball: true),
-            RunsButton(runs: 2, label: '2 LB NB', legbye: true, noball: true),
-            RunsButton(runs: 3, label: '3 LB NB', legbye: true, noball: true),
-            RunsButton(runs: 4, label: '4 LB NB', legbye: true, noball: true),
+            RunsButton(
+                runs: Runs.one,
+                label: '1 LB NB',
+                type: RunButtonType.noballLegByes),
+            RunsButton(
+                runs: Runs.two,
+                label: '2 LB NB',
+                type: RunButtonType.noballLegByes),
+            RunsButton(
+                runs: Runs.three,
+                label: '3 LB NB',
+                type: RunButtonType.noballLegByes),
+            RunsButton(
+                runs: Runs.four,
+                label: '4 LB NB',
+                type: RunButtonType.noballLegByes),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 5, label: '5 LB NB', legbye: true, noball: true),
-            RunsButton(runs: 6, label: '6 LB NB', legbye: true, noball: true),
-            RunsButton(runs: 7, label: '7 LB NB', legbye: true, noball: true),
+            RunsButton(
+                runs: Runs.five,
+                label: '5 LB NB',
+                type: RunButtonType.noballLegByes),
+            RunsButton(
+                runs: Runs.six,
+                label: '6 LB NB',
+                type: RunButtonType.noballLegByes),
+            RunsButton(
+                runs: Runs.seven,
+                label: '7 LB NB',
+                type: RunButtonType.noballLegByes),
           ],
         ),
       ],
@@ -297,18 +329,20 @@ class ByeScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 1, label: '1 B', bye: true),
-            RunsButton(runs: 2, label: '2 B', bye: true),
-            RunsButton(runs: 3, label: '3 B', bye: true),
-            RunsButton(runs: 4, label: '4 B', bye: true),
+            RunsButton(runs: Runs.one, label: '1 B', type: RunButtonType.byes),
+            RunsButton(runs: Runs.two, label: '2 B', type: RunButtonType.byes),
+            RunsButton(
+                runs: Runs.three, label: '3 B', type: RunButtonType.byes),
+            RunsButton(runs: Runs.four, label: '4 B', type: RunButtonType.byes),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 5, label: '5 B', bye: true),
-            RunsButton(runs: 6, label: '6 B', bye: true),
-            RunsButton(runs: 7, label: '7 B', bye: true),
+            RunsButton(runs: Runs.five, label: '5 B', type: RunButtonType.byes),
+            RunsButton(runs: Runs.six, label: '6 B', type: RunButtonType.byes),
+            RunsButton(
+                runs: Runs.seven, label: '7 B', type: RunButtonType.byes),
           ],
         ),
       ],
@@ -338,18 +372,33 @@ class NoballByeScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 1, label: '1B NB', bye: true, noball: true),
-            RunsButton(runs: 2, label: '2B NB', bye: true, noball: true),
-            RunsButton(runs: 3, label: '3B NB', bye: true, noball: true),
-            RunsButton(runs: 4, label: '4B NB', bye: true, noball: true),
+            RunsButton(
+                runs: Runs.one, label: '1B NB', type: RunButtonType.noballByes),
+            RunsButton(
+                runs: Runs.two, label: '2B NB', type: RunButtonType.noballByes),
+            RunsButton(
+                runs: Runs.three,
+                label: '3B NB',
+                type: RunButtonType.noballByes),
+            RunsButton(
+                runs: Runs.four,
+                label: '4B NB',
+                type: RunButtonType.noballByes),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 5, label: '5B NB', bye: true, noball: true),
-            RunsButton(runs: 6, label: '6B NB', bye: true, noball: true),
-            RunsButton(runs: 7, label: '7B NB', bye: true, noball: true),
+            RunsButton(
+                runs: Runs.five,
+                label: '5B NB',
+                type: RunButtonType.noballByes),
+            RunsButton(
+                runs: Runs.six, label: '6B NB', type: RunButtonType.noballByes),
+            RunsButton(
+                runs: Runs.seven,
+                label: '7B NB',
+                type: RunButtonType.noballByes),
           ],
         ),
       ],
@@ -377,18 +426,24 @@ class WideScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 0, label: 'Wd', wide: true),
-            RunsButton(runs: 1, label: '1 + Wd', wide: true),
-            RunsButton(runs: 2, label: '2 + Wd', wide: true),
-            RunsButton(runs: 3, label: '3 + Wd', wide: true),
+            RunsButton(runs: Runs.dot, label: 'Wd', type: RunButtonType.wide),
+            RunsButton(
+                runs: Runs.one, label: '1 + Wd', type: RunButtonType.wide),
+            RunsButton(
+                runs: Runs.two, label: '2 + Wd', type: RunButtonType.wide),
+            RunsButton(
+                runs: Runs.three, label: '3 + Wd', type: RunButtonType.wide),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            RunsButton(runs: 4, label: '4 + Wd', wide: true),
-            RunsButton(runs: 5, label: '5 + Wd', wide: true),
-            RunsButton(runs: 6, label: '6 + Wd', wide: true),
+            RunsButton(
+                runs: Runs.four, label: '4 + Wd', type: RunButtonType.wide),
+            RunsButton(
+                runs: Runs.five, label: '5 + Wd', type: RunButtonType.wide),
+            RunsButton(
+                runs: Runs.six, label: '6 + Wd', type: RunButtonType.wide),
           ],
         ),
       ],
@@ -416,12 +471,18 @@ class NoballScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              RunsButton(runs: 0, label: 'NB', noball: true),
-              RunsButton(runs: 1, label: '1 NB', noball: true),
-              RunsButton(runs: 2, label: '2 NB', noball: true),
-              RunsButton(runs: 3, label: '3 NB', noball: true),
-              RunsButton(runs: 4, label: '4 NB', noball: true),
-              RunsButton(runs: 6, label: '6 NB', noball: true),
+              RunsButton(
+                  runs: Runs.dot, label: 'NB', type: RunButtonType.noball),
+              RunsButton(
+                  runs: Runs.one, label: '1 NB', type: RunButtonType.noball),
+              RunsButton(
+                  runs: Runs.two, label: '2 NB', type: RunButtonType.noball),
+              RunsButton(
+                  runs: Runs.three, label: '3 NB', type: RunButtonType.noball),
+              RunsButton(
+                  runs: Runs.four, label: '4 NB', type: RunButtonType.noball),
+              RunsButton(
+                  runs: Runs.six, label: '6 NB', type: RunButtonType.noball),
             ],
           ),
         ),
