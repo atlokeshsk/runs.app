@@ -30,7 +30,7 @@ class ScorePage extends StatelessWidget {
           } else {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return const Center(child: Text('Connection State None'));
+                return SizedBox.shrink();
               case ConnectionState.waiting:
                 return const Center(child: CircularProgressIndicator());
               case ConnectionState.active:
@@ -58,7 +58,7 @@ class ScorePage extends StatelessWidget {
                               const Divider(indent: 10, endIndent: 10),
                               if (match.innings == Innings.second)
                                 Text(
-                                  'Need ${match.target! - score.runs} Runs off ${match.overs * 6 - score.oversCompleted}',
+                                  'Need ${match.target! - score.runs} Runs off ${match.overs * 6 - score.ballsBowed}',
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               if (match.innings == Innings.second)
@@ -68,7 +68,9 @@ class ScorePage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      RecentBalls(),
+                      RecentBalls(
+                        score: score,
+                      ),
                       // Buttons Need to added.
                       ControlSection(),
                     ],

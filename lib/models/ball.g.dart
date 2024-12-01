@@ -17,24 +17,34 @@ const BallSchema = CollectionSchema(
   name: r'Ball',
   id: -1292384951720714968,
   properties: {
-    r'ballType': PropertySchema(
+    r'ball': PropertySchema(
       id: 0,
+      name: r'ball',
+      type: IsarType.long,
+    ),
+    r'ballType': PropertySchema(
+      id: 1,
       name: r'ballType',
       type: IsarType.byte,
       enumMap: _BallballTypeEnumValueMap,
     ),
     r'content': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'content',
       type: IsarType.string,
     ),
+    r'datetime': PropertySchema(
+      id: 3,
+      name: r'datetime',
+      type: IsarType.dateTime,
+    ),
     r'name': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'name',
       type: IsarType.string,
     ),
     r'over': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'over',
       type: IsarType.long,
     )
@@ -90,10 +100,12 @@ void _ballSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeByte(offsets[0], object.ballType.index);
-  writer.writeString(offsets[1], object.content);
-  writer.writeString(offsets[2], object.name);
-  writer.writeLong(offsets[3], object.over);
+  writer.writeLong(offsets[0], object.ball);
+  writer.writeByte(offsets[1], object.ballType.index);
+  writer.writeString(offsets[2], object.content);
+  writer.writeDateTime(offsets[3], object.datetime);
+  writer.writeString(offsets[4], object.name);
+  writer.writeLong(offsets[5], object.over);
 }
 
 Ball _ballDeserialize(
@@ -103,13 +115,15 @@ Ball _ballDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Ball();
+  object.ball = reader.readLong(offsets[0]);
   object.ballType =
-      _BallballTypeValueEnumMap[reader.readByteOrNull(offsets[0])] ??
+      _BallballTypeValueEnumMap[reader.readByteOrNull(offsets[1])] ??
           BallType.runs;
-  object.content = reader.readString(offsets[1]);
+  object.content = reader.readString(offsets[2]);
+  object.datetime = reader.readDateTime(offsets[3]);
   object.id = id;
-  object.name = reader.readString(offsets[2]);
-  object.over = reader.readLong(offsets[3]);
+  object.name = reader.readString(offsets[4]);
+  object.over = reader.readLong(offsets[5]);
   return object;
 }
 
@@ -121,13 +135,17 @@ P _ballDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readLong(offset)) as P;
+    case 1:
       return (_BallballTypeValueEnumMap[reader.readByteOrNull(offset)] ??
           BallType.runs) as P;
-    case 1:
-      return (reader.readString(offset)) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
+      return (reader.readDateTime(offset)) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -246,6 +264,58 @@ extension BallQueryWhere on QueryBuilder<Ball, Ball, QWhereClause> {
 }
 
 extension BallQueryFilter on QueryBuilder<Ball, Ball, QFilterCondition> {
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> ballEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ball',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> ballGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'ball',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> ballLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'ball',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> ballBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'ball',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Ball, Ball, QAfterFilterCondition> ballTypeEqualTo(
       BallType value) {
     return QueryBuilder.apply(this, (query) {
@@ -423,6 +493,59 @@ extension BallQueryFilter on QueryBuilder<Ball, Ball, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'content',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> datetimeEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> datetimeGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> datetimeLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterFilterCondition> datetimeBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'datetime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -702,6 +825,18 @@ extension BallQueryLinks on QueryBuilder<Ball, Ball, QFilterCondition> {
 }
 
 extension BallQuerySortBy on QueryBuilder<Ball, Ball, QSortBy> {
+  QueryBuilder<Ball, Ball, QAfterSortBy> sortByBall() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ball', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterSortBy> sortByBallDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ball', Sort.desc);
+    });
+  }
+
   QueryBuilder<Ball, Ball, QAfterSortBy> sortByBallType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ballType', Sort.asc);
@@ -723,6 +858,18 @@ extension BallQuerySortBy on QueryBuilder<Ball, Ball, QSortBy> {
   QueryBuilder<Ball, Ball, QAfterSortBy> sortByContentDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'content', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterSortBy> sortByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterSortBy> sortByDatetimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.desc);
     });
   }
 
@@ -752,6 +899,18 @@ extension BallQuerySortBy on QueryBuilder<Ball, Ball, QSortBy> {
 }
 
 extension BallQuerySortThenBy on QueryBuilder<Ball, Ball, QSortThenBy> {
+  QueryBuilder<Ball, Ball, QAfterSortBy> thenByBall() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ball', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterSortBy> thenByBallDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ball', Sort.desc);
+    });
+  }
+
   QueryBuilder<Ball, Ball, QAfterSortBy> thenByBallType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ballType', Sort.asc);
@@ -773,6 +932,18 @@ extension BallQuerySortThenBy on QueryBuilder<Ball, Ball, QSortThenBy> {
   QueryBuilder<Ball, Ball, QAfterSortBy> thenByContentDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'content', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterSortBy> thenByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QAfterSortBy> thenByDatetimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.desc);
     });
   }
 
@@ -814,6 +985,12 @@ extension BallQuerySortThenBy on QueryBuilder<Ball, Ball, QSortThenBy> {
 }
 
 extension BallQueryWhereDistinct on QueryBuilder<Ball, Ball, QDistinct> {
+  QueryBuilder<Ball, Ball, QDistinct> distinctByBall() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'ball');
+    });
+  }
+
   QueryBuilder<Ball, Ball, QDistinct> distinctByBallType() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'ballType');
@@ -824,6 +1001,12 @@ extension BallQueryWhereDistinct on QueryBuilder<Ball, Ball, QDistinct> {
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'content', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Ball, Ball, QDistinct> distinctByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'datetime');
     });
   }
 
@@ -848,6 +1031,12 @@ extension BallQueryProperty on QueryBuilder<Ball, Ball, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Ball, int, QQueryOperations> ballProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'ball');
+    });
+  }
+
   QueryBuilder<Ball, BallType, QQueryOperations> ballTypeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'ballType');
@@ -857,6 +1046,12 @@ extension BallQueryProperty on QueryBuilder<Ball, Ball, QQueryProperty> {
   QueryBuilder<Ball, String, QQueryOperations> contentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'content');
+    });
+  }
+
+  QueryBuilder<Ball, DateTime, QQueryOperations> datetimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'datetime');
     });
   }
 

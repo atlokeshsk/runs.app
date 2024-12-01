@@ -8,26 +8,28 @@ part 'score.g.dart';
 class Score {
   Id id = Isar.autoIncrement;
 
-  Score({
-    required this.runs,
-    required this.oversCompleted,
-    required this.wicketsFall,
-    required this.dots,
-    required this.ones,
-    required this.twos,
-    required this.threes,
-    required this.fours,
-    required this.sixes,
-    required this.extras,
-    required this.wide,
-    required this.noball,
-    required this.nextBattingPostion,
-  }) : datetime = DateTime.now();
+  Score(
+      {required this.runs,
+      required this.ballsBowed,
+      required this.wicketsFall,
+      required this.dots,
+      required this.ones,
+      required this.twos,
+      required this.threes,
+      required this.fours,
+      required this.sixes,
+      required this.extras,
+      required this.wide,
+      required this.noball,
+      required this.nextBattingPostion,
+      required this.currentOvers})
+      : datetime = DateTime.now();
 
   Score.newScore()
       : this(
           runs: 0,
-          oversCompleted: 0,
+          ballsBowed: 0,
+          currentOvers: 0,
           wicketsFall: 0,
           dots: 0,
           ones: 0,
@@ -42,7 +44,8 @@ class Score {
         );
 
   int runs;
-  int oversCompleted;
+  int currentOvers;
+  int ballsBowed;
   int wicketsFall;
   int dots;
   int ones;
@@ -115,7 +118,7 @@ class Score {
       required Runs runs,
       required int previousOver}) async {
     // this for noball wide extras.
-    if (this.oversCompleted == previousOver) {
+    if (this.ballsBowed == previousOver) {
       if (getRuns(runs) % 2 != 0) {
         for (final player in playersOnCrease) {
           if (player.id != striker.id) {
@@ -128,7 +131,7 @@ class Score {
       }
     }
     // change the striker if the runs is odd and not last ball.
-    else if (getRuns(runs) % 2 != 0 && oversCompleted % 6 != 0) {
+    else if (getRuns(runs) % 2 != 0 && ballsBowed % 6 != 0) {
       for (final player in playersOnCrease) {
         if (player.id != striker.id) {
           print(player.name);
@@ -136,7 +139,7 @@ class Score {
           break;
         }
       }
-    } else if (getRuns(runs) % 2 == 0 && oversCompleted % 6 == 0) {
+    } else if (getRuns(runs) % 2 == 0 && ballsBowed % 6 == 0) {
       for (final player in playersOnCrease) {
         if (player.id != striker.id) {
           this.striker.value = player;
@@ -155,7 +158,7 @@ class Score {
     return '''
   Score Details:
     Runs: $runs
-    Overs Completed: $oversCompleted
+    Overs Completed: $ballsBowed
     Wickets Fallen: $wicketsFall
     Dots: $dots
     Ones: $ones
@@ -173,7 +176,8 @@ class Score {
   Score copyWith() {
     return Score(
       runs: runs,
-      oversCompleted: oversCompleted,
+      currentOvers: currentOvers,
+      ballsBowed: ballsBowed,
       wicketsFall: wicketsFall,
       dots: dots,
       ones: ones,

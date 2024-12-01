@@ -133,7 +133,7 @@ class RunsButton extends StatelessWidget {
 
     return TextButton(
       onPressed: () async {
-        if (score.oversCompleted == 0 && score.playersOnCrease.isEmpty) {
+        if (score.ballsBowed == 0 && score.playersOnCrease.isEmpty) {
           context
               .read<ControlSectionState>()
               .changeSection(Control.selectBatsman);

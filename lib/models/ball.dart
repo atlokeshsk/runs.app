@@ -6,7 +6,7 @@ part 'ball.g.dart';
 
 @Collection()
 class Ball {
-  Ball();
+  Ball() : datetime = DateTime.now();
 
   Id id = Isar.autoIncrement;
 
@@ -15,6 +15,10 @@ class Ball {
   late String content;
 
   late int over;
+
+  late int ball;
+
+  DateTime datetime;
 
   @enumerated
   late BallType ballType;
@@ -65,6 +69,22 @@ class Ball {
         return 'Huge it\'s a Six.';
       case Runs.seven:
         return 'Seven Runs';
+    }
+  }
+
+  void setBallTypeForRuns({required Runs runs}) {
+    switch (runs) {
+      case Runs.dot:
+      case Runs.one:
+      case Runs.two:
+      case Runs.three:
+      case Runs.five:
+      case Runs.seven:
+        ballType = BallType.runs;
+      case Runs.four:
+        ballType = BallType.four;
+      case Runs.six:
+        ballType = BallType.six;
     }
   }
 

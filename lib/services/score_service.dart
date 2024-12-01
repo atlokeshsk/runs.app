@@ -116,8 +116,8 @@ class ScoreService {
 
       switch (type) {
         case RunButtonType.runs:
-          newscore.oversCompleted++;
-          ball.ballType = BallType.runs;
+          newscore.ballsBowed++;
+          ball.setBallTypeForRuns(runs: runs);
           newbatter!.addRuns(runs: runs);
           newbatter.balls++;
 
@@ -128,14 +128,14 @@ class ScoreService {
           ball.ballType = BallType.wide;
 
         case RunButtonType.byes:
-          newscore.oversCompleted++;
+          newscore.ballsBowed++;
           newscore.extras++;
           ball.ballType = BallType.runs;
           newbatter!.balls++;
           newbatter.dots++;
 
         case RunButtonType.legbyes:
-          newscore.oversCompleted++;
+          newscore.ballsBowed++;
           newscore.extras++;
           ball.ballType = BallType.runs;
           newbatter!.balls++;
@@ -165,9 +165,34 @@ class ScoreService {
       if (newbatter != null) {
         await _isar.batters.put(newbatter);
       }
+
+      switch (type) {
+        case RunButtonType.runs:
+        case RunButtonType.byes:
+        case RunButtonType.legbyes:
+          // compute the over for the newscore
+          if (newscore.ballsBowed % 6 == 0) {
+            newscore.currentOvers == newscore.ballsBowed ~/ 6 - 1;
+          } else {
+            newscore.currentOvers = newscore.ballsBowed ~/ 6;
+          }
+        case RunButtonType.wide:
+        case RunButtonType.noball:
+        case RunButtonType.noballByes:
+        case RunButtonType.noballLegByes:
+          // compute the over for the newscore
+          if (newscore.ballsBowed % 6 == 0) {
+            print('executed');
+            print('balls bowled ${newscore.ballsBowed}');
+            print(newscore.ballsBowed ~/ 6);
+            newscore.currentOvers = newscore.ballsBowed ~/ 6;
+          }
+      }
+
       // add the ball related stuff.
       ball.match.value = match;
-      ball.over = newscore.oversCompleted;
+      ball.over = newscore.currentOvers;
+      ball.ball = score.ballsBowed % 6 + 1;
       ball.addNameandContent(runs: runs, type: type);
       ball.player.value = striker;
       await _isar.balls.put(ball);
@@ -185,7 +210,7 @@ class ScoreService {
       await newscore.batter.save(); // batter save
       await newscore.socreboard.save(); // object save
       await newscore.updateStriker(
-          striker: striker, runs: runs, previousOver: score.oversCompleted);
+          striker: striker, runs: runs, previousOver: score.ballsBowed);
     });
   }
 

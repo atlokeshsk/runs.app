@@ -16,8 +16,8 @@ class SecondaryInfo extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text('Extras-${score.extras}'),
-            Text('Overs-${score.oversCompleted.overs}/${match.overs}'),
-            Text('CRR-${score.runs.currentRunRate(score.oversCompleted)}')
+            Text('Overs-${score.ballsBowed.overs}/${match.overs}'),
+            Text('CRR-${score.runs.currentRunRate(score.ballsBowed)}')
           ],
         ),
         if (match.innings == Innings.second) SizedBox(height: 10),
@@ -29,7 +29,7 @@ class SecondaryInfo extends StatelessWidget {
               Text(
                 'RR-${match.target!.requiredRunRate(
                   currentRuns: score.runs,
-                  ballsRemaining: match.overs * 6 - score.oversCompleted,
+                  ballsRemaining: match.overs * 6 - score.ballsBowed,
                 )}',
               ),
             ],

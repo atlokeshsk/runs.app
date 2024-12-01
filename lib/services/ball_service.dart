@@ -12,7 +12,13 @@ class BallService {
     });
   }
 
-  // Future<List<Ball>> getCurrentOverBalls({required Match match,required Score score}){
-
-  // }
+  Future<List<Ball>> getCurrentOverBalls(
+      {required Match match, required int over}) async {
+    return await _isar.balls
+        .filter()
+        .match((q) => q.idEqualTo(match.id))
+        .overEqualTo(over)
+        .sortByDatetime()
+        .findAll();
+  }
 }

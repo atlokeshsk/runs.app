@@ -17,73 +17,78 @@ const ScoreSchema = CollectionSchema(
   name: r'Score',
   id: -357457489503241584,
   properties: {
-    r'datetime': PropertySchema(
+    r'ballsBowed': PropertySchema(
       id: 0,
+      name: r'ballsBowed',
+      type: IsarType.long,
+    ),
+    r'currentOvers': PropertySchema(
+      id: 1,
+      name: r'currentOvers',
+      type: IsarType.long,
+    ),
+    r'datetime': PropertySchema(
+      id: 2,
       name: r'datetime',
       type: IsarType.dateTime,
     ),
     r'dots': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'dots',
       type: IsarType.long,
     ),
     r'extras': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'extras',
       type: IsarType.long,
     ),
     r'fours': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'fours',
       type: IsarType.long,
     ),
     r'nextBattingPostion': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'nextBattingPostion',
       type: IsarType.long,
     ),
     r'noball': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'noball',
       type: IsarType.long,
     ),
     r'ones': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'ones',
       type: IsarType.long,
     ),
-    r'oversCompleted': PropertySchema(
-      id: 7,
-      name: r'oversCompleted',
-      type: IsarType.long,
-    ),
     r'runs': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'runs',
       type: IsarType.long,
     ),
     r'sixes': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'sixes',
       type: IsarType.long,
     ),
     r'threes': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'threes',
       type: IsarType.long,
     ),
     r'twos': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'twos',
       type: IsarType.long,
     ),
     r'wicketsFall': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'wicketsFall',
       type: IsarType.long,
     ),
     r'wide': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'wide',
       type: IsarType.long,
     )
@@ -154,20 +159,21 @@ void _scoreSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.datetime);
-  writer.writeLong(offsets[1], object.dots);
-  writer.writeLong(offsets[2], object.extras);
-  writer.writeLong(offsets[3], object.fours);
-  writer.writeLong(offsets[4], object.nextBattingPostion);
-  writer.writeLong(offsets[5], object.noball);
-  writer.writeLong(offsets[6], object.ones);
-  writer.writeLong(offsets[7], object.oversCompleted);
-  writer.writeLong(offsets[8], object.runs);
-  writer.writeLong(offsets[9], object.sixes);
-  writer.writeLong(offsets[10], object.threes);
-  writer.writeLong(offsets[11], object.twos);
-  writer.writeLong(offsets[12], object.wicketsFall);
-  writer.writeLong(offsets[13], object.wide);
+  writer.writeLong(offsets[0], object.ballsBowed);
+  writer.writeLong(offsets[1], object.currentOvers);
+  writer.writeDateTime(offsets[2], object.datetime);
+  writer.writeLong(offsets[3], object.dots);
+  writer.writeLong(offsets[4], object.extras);
+  writer.writeLong(offsets[5], object.fours);
+  writer.writeLong(offsets[6], object.nextBattingPostion);
+  writer.writeLong(offsets[7], object.noball);
+  writer.writeLong(offsets[8], object.ones);
+  writer.writeLong(offsets[9], object.runs);
+  writer.writeLong(offsets[10], object.sixes);
+  writer.writeLong(offsets[11], object.threes);
+  writer.writeLong(offsets[12], object.twos);
+  writer.writeLong(offsets[13], object.wicketsFall);
+  writer.writeLong(offsets[14], object.wide);
 }
 
 Score _scoreDeserialize(
@@ -177,21 +183,22 @@ Score _scoreDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Score(
-    dots: reader.readLong(offsets[1]),
-    extras: reader.readLong(offsets[2]),
-    fours: reader.readLong(offsets[3]),
-    nextBattingPostion: reader.readLong(offsets[4]),
-    noball: reader.readLong(offsets[5]),
-    ones: reader.readLong(offsets[6]),
-    oversCompleted: reader.readLong(offsets[7]),
-    runs: reader.readLong(offsets[8]),
-    sixes: reader.readLong(offsets[9]),
-    threes: reader.readLong(offsets[10]),
-    twos: reader.readLong(offsets[11]),
-    wicketsFall: reader.readLong(offsets[12]),
-    wide: reader.readLong(offsets[13]),
+    ballsBowed: reader.readLong(offsets[0]),
+    currentOvers: reader.readLong(offsets[1]),
+    dots: reader.readLong(offsets[3]),
+    extras: reader.readLong(offsets[4]),
+    fours: reader.readLong(offsets[5]),
+    nextBattingPostion: reader.readLong(offsets[6]),
+    noball: reader.readLong(offsets[7]),
+    ones: reader.readLong(offsets[8]),
+    runs: reader.readLong(offsets[9]),
+    sixes: reader.readLong(offsets[10]),
+    threes: reader.readLong(offsets[11]),
+    twos: reader.readLong(offsets[12]),
+    wicketsFall: reader.readLong(offsets[13]),
+    wide: reader.readLong(offsets[14]),
   );
-  object.datetime = reader.readDateTime(offsets[0]);
+  object.datetime = reader.readDateTime(offsets[2]);
   object.id = id;
   return object;
 }
@@ -204,11 +211,11 @@ P _scoreDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 3:
       return (reader.readLong(offset)) as P;
     case 4:
@@ -230,6 +237,8 @@ P _scoreDeserializeProp<P>(
     case 12:
       return (reader.readLong(offset)) as P;
     case 13:
+      return (reader.readLong(offset)) as P;
+    case 14:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -339,6 +348,112 @@ extension ScoreQueryWhere on QueryBuilder<Score, Score, QWhereClause> {
 }
 
 extension ScoreQueryFilter on QueryBuilder<Score, Score, QFilterCondition> {
+  QueryBuilder<Score, Score, QAfterFilterCondition> ballsBowedEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ballsBowed',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> ballsBowedGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'ballsBowed',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> ballsBowedLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'ballsBowed',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> ballsBowedBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'ballsBowed',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> currentOversEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'currentOvers',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> currentOversGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'currentOvers',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> currentOversLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'currentOvers',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> currentOversBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'currentOvers',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterFilterCondition> datetimeEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -750,59 +865,6 @@ extension ScoreQueryFilter on QueryBuilder<Score, Score, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'ones',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> oversCompletedEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'oversCompleted',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> oversCompletedGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'oversCompleted',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> oversCompletedLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'oversCompleted',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterFilterCondition> oversCompletedBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'oversCompleted',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1255,6 +1317,30 @@ extension ScoreQueryLinks on QueryBuilder<Score, Score, QFilterCondition> {
 }
 
 extension ScoreQuerySortBy on QueryBuilder<Score, Score, QSortBy> {
+  QueryBuilder<Score, Score, QAfterSortBy> sortByBallsBowed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ballsBowed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByBallsBowedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ballsBowed', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByCurrentOvers() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentOvers', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByCurrentOversDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentOvers', Sort.desc);
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterSortBy> sortByDatetime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'datetime', Sort.asc);
@@ -1339,18 +1425,6 @@ extension ScoreQuerySortBy on QueryBuilder<Score, Score, QSortBy> {
     });
   }
 
-  QueryBuilder<Score, Score, QAfterSortBy> sortByOversCompleted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'oversCompleted', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterSortBy> sortByOversCompletedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'oversCompleted', Sort.desc);
-    });
-  }
-
   QueryBuilder<Score, Score, QAfterSortBy> sortByRuns() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'runs', Sort.asc);
@@ -1425,6 +1499,30 @@ extension ScoreQuerySortBy on QueryBuilder<Score, Score, QSortBy> {
 }
 
 extension ScoreQuerySortThenBy on QueryBuilder<Score, Score, QSortThenBy> {
+  QueryBuilder<Score, Score, QAfterSortBy> thenByBallsBowed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ballsBowed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByBallsBowedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ballsBowed', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByCurrentOvers() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentOvers', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByCurrentOversDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentOvers', Sort.desc);
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterSortBy> thenByDatetime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'datetime', Sort.asc);
@@ -1521,18 +1619,6 @@ extension ScoreQuerySortThenBy on QueryBuilder<Score, Score, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Score, Score, QAfterSortBy> thenByOversCompleted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'oversCompleted', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Score, Score, QAfterSortBy> thenByOversCompletedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'oversCompleted', Sort.desc);
-    });
-  }
-
   QueryBuilder<Score, Score, QAfterSortBy> thenByRuns() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'runs', Sort.asc);
@@ -1607,6 +1693,18 @@ extension ScoreQuerySortThenBy on QueryBuilder<Score, Score, QSortThenBy> {
 }
 
 extension ScoreQueryWhereDistinct on QueryBuilder<Score, Score, QDistinct> {
+  QueryBuilder<Score, Score, QDistinct> distinctByBallsBowed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'ballsBowed');
+    });
+  }
+
+  QueryBuilder<Score, Score, QDistinct> distinctByCurrentOvers() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'currentOvers');
+    });
+  }
+
   QueryBuilder<Score, Score, QDistinct> distinctByDatetime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'datetime');
@@ -1646,12 +1744,6 @@ extension ScoreQueryWhereDistinct on QueryBuilder<Score, Score, QDistinct> {
   QueryBuilder<Score, Score, QDistinct> distinctByOnes() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'ones');
-    });
-  }
-
-  QueryBuilder<Score, Score, QDistinct> distinctByOversCompleted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'oversCompleted');
     });
   }
 
@@ -1699,6 +1791,18 @@ extension ScoreQueryProperty on QueryBuilder<Score, Score, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Score, int, QQueryOperations> ballsBowedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'ballsBowed');
+    });
+  }
+
+  QueryBuilder<Score, int, QQueryOperations> currentOversProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'currentOvers');
+    });
+  }
+
   QueryBuilder<Score, DateTime, QQueryOperations> datetimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'datetime');
@@ -1738,12 +1842,6 @@ extension ScoreQueryProperty on QueryBuilder<Score, Score, QQueryProperty> {
   QueryBuilder<Score, int, QQueryOperations> onesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'ones');
-    });
-  }
-
-  QueryBuilder<Score, int, QQueryOperations> oversCompletedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'oversCompleted');
     });
   }
 
