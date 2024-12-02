@@ -52,43 +52,48 @@ const ScoreSchema = CollectionSchema(
       name: r'nextBattingPostion',
       type: IsarType.long,
     ),
-    r'noball': PropertySchema(
+    r'nextPartnershipOrder': PropertySchema(
       id: 7,
+      name: r'nextPartnershipOrder',
+      type: IsarType.long,
+    ),
+    r'noball': PropertySchema(
+      id: 8,
       name: r'noball',
       type: IsarType.long,
     ),
     r'ones': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'ones',
       type: IsarType.long,
     ),
     r'runs': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'runs',
       type: IsarType.long,
     ),
     r'sixes': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'sixes',
       type: IsarType.long,
     ),
     r'threes': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'threes',
       type: IsarType.long,
     ),
     r'twos': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'twos',
       type: IsarType.long,
     ),
     r'wicketsFall': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'wicketsFall',
       type: IsarType.long,
     ),
     r'wide': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'wide',
       type: IsarType.long,
     )
@@ -184,14 +189,15 @@ void _scoreSerialize(
   writer.writeLong(offsets[4], object.extras);
   writer.writeLong(offsets[5], object.fours);
   writer.writeLong(offsets[6], object.nextBattingPostion);
-  writer.writeLong(offsets[7], object.noball);
-  writer.writeLong(offsets[8], object.ones);
-  writer.writeLong(offsets[9], object.runs);
-  writer.writeLong(offsets[10], object.sixes);
-  writer.writeLong(offsets[11], object.threes);
-  writer.writeLong(offsets[12], object.twos);
-  writer.writeLong(offsets[13], object.wicketsFall);
-  writer.writeLong(offsets[14], object.wide);
+  writer.writeLong(offsets[7], object.nextPartnershipOrder);
+  writer.writeLong(offsets[8], object.noball);
+  writer.writeLong(offsets[9], object.ones);
+  writer.writeLong(offsets[10], object.runs);
+  writer.writeLong(offsets[11], object.sixes);
+  writer.writeLong(offsets[12], object.threes);
+  writer.writeLong(offsets[13], object.twos);
+  writer.writeLong(offsets[14], object.wicketsFall);
+  writer.writeLong(offsets[15], object.wide);
 }
 
 Score _scoreDeserialize(
@@ -207,14 +213,15 @@ Score _scoreDeserialize(
     extras: reader.readLong(offsets[4]),
     fours: reader.readLong(offsets[5]),
     nextBattingPostion: reader.readLong(offsets[6]),
-    noball: reader.readLong(offsets[7]),
-    ones: reader.readLong(offsets[8]),
-    runs: reader.readLong(offsets[9]),
-    sixes: reader.readLong(offsets[10]),
-    threes: reader.readLong(offsets[11]),
-    twos: reader.readLong(offsets[12]),
-    wicketsFall: reader.readLong(offsets[13]),
-    wide: reader.readLong(offsets[14]),
+    nextPartnershipOrder: reader.readLong(offsets[7]),
+    noball: reader.readLong(offsets[8]),
+    ones: reader.readLong(offsets[9]),
+    runs: reader.readLong(offsets[10]),
+    sixes: reader.readLong(offsets[11]),
+    threes: reader.readLong(offsets[12]),
+    twos: reader.readLong(offsets[13]),
+    wicketsFall: reader.readLong(offsets[14]),
+    wide: reader.readLong(offsets[15]),
   );
   object.datetime = reader.readDateTime(offsets[2]);
   object.id = id;
@@ -257,6 +264,8 @@ P _scoreDeserializeProp<P>(
     case 13:
       return (reader.readLong(offset)) as P;
     case 14:
+      return (reader.readLong(offset)) as P;
+    case 15:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -791,6 +800,61 @@ extension ScoreQueryFilter on QueryBuilder<Score, Score, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'nextBattingPostion',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> nextPartnershipOrderEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nextPartnershipOrder',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition>
+      nextPartnershipOrderGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'nextPartnershipOrder',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition>
+      nextPartnershipOrderLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'nextPartnershipOrder',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> nextPartnershipOrderBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'nextPartnershipOrder',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1471,6 +1535,18 @@ extension ScoreQuerySortBy on QueryBuilder<Score, Score, QSortBy> {
     });
   }
 
+  QueryBuilder<Score, Score, QAfterSortBy> sortByNextPartnershipOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nextPartnershipOrder', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> sortByNextPartnershipOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nextPartnershipOrder', Sort.desc);
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterSortBy> sortByNoball() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'noball', Sort.asc);
@@ -1665,6 +1741,18 @@ extension ScoreQuerySortThenBy on QueryBuilder<Score, Score, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Score, Score, QAfterSortBy> thenByNextPartnershipOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nextPartnershipOrder', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterSortBy> thenByNextPartnershipOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nextPartnershipOrder', Sort.desc);
+    });
+  }
+
   QueryBuilder<Score, Score, QAfterSortBy> thenByNoball() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'noball', Sort.asc);
@@ -1805,6 +1893,12 @@ extension ScoreQueryWhereDistinct on QueryBuilder<Score, Score, QDistinct> {
     });
   }
 
+  QueryBuilder<Score, Score, QDistinct> distinctByNextPartnershipOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'nextPartnershipOrder');
+    });
+  }
+
   QueryBuilder<Score, Score, QDistinct> distinctByNoball() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'noball');
@@ -1900,6 +1994,12 @@ extension ScoreQueryProperty on QueryBuilder<Score, Score, QQueryProperty> {
   QueryBuilder<Score, int, QQueryOperations> nextBattingPostionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'nextBattingPostion');
+    });
+  }
+
+  QueryBuilder<Score, int, QQueryOperations> nextPartnershipOrderProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'nextPartnershipOrder');
     });
   }
 

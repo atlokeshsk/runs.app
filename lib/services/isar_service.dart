@@ -17,6 +17,9 @@ class IsarService {
         ScoreSchema,
         TeamSchema,
         ScoreBoardSchema,
+        PartnershipSchema,
+        PartnershipInfoSchema,
+        PartnershipBatterInfoSchema
       ],
       directory: dir.path,
       name: 'runsdb',

@@ -66,7 +66,7 @@ class BallAvatar extends StatelessWidget {
         color = Colors.blueAccent; // Positive highlight for six
         break;
       case BallType.wide:
-        color = Colors.grey.shade400; // Wide
+        color = Colors.orange.shade400; // Wide
         break;
       case BallType.noball:
       case BallType.noballLegbye:
@@ -76,6 +76,9 @@ class BallAvatar extends StatelessWidget {
       case BallType.wicket:
         color = Colors.red; // Red for dismissal
         break;
+      case BallType.bye:
+      case BallType.legbye:
+        color = Colors.orange.shade300;
     }
 
     return Padding(

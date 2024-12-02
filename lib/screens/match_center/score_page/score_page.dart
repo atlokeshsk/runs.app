@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/screens/match_center/score_page/control_section/control_section_provider.dart';
+import 'package:runs/screens/match_center/score_page/partnership_info_section.dart';
 import 'package:runs/screens/match_center/score_page/recent_balls.dart';
 import 'package:runs/services/services.dart';
 
@@ -63,10 +64,16 @@ class ScorePage extends StatelessWidget {
                               if (match.innings == Innings.second)
                                 const Divider(indent: 10, endIndent: 10),
                               BattersInfo(),
+                              const Divider(indent: 10, endIndent: 10),
+                              PartnershipSection(
+                                score: score,
+                                match: match,
+                              ),
                             ],
                           ),
                         ),
                       ),
+
                       RecentBalls(
                         score: score,
                       ),

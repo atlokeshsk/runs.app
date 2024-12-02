@@ -157,6 +157,7 @@ class _SelectionListState extends State<SelectionList> {
         );
         return;
       }
+
       // check the wheter player already present in the player on creae
       if (score.playersOnCrease.elementAt(0).id == player.id &&
           !player1Batting) {
@@ -166,6 +167,7 @@ class _SelectionListState extends State<SelectionList> {
         return;
       }
 
+      // check the wheter player already present in the player on creae
       if (score.playersOnCrease.elementAt(1).id == player.id &&
           !player2Batting) {
         await scoreService.removePlayerFromPlayerOnCrease(

@@ -125,4 +125,6 @@ enum BallType {
   noballLegbye,
   noballBye,
   wicket,
+  bye,
+  legbye
 }

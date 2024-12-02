@@ -161,6 +161,8 @@ const _BallballTypeEnumValueMap = {
   'noballLegbye': 5,
   'noballBye': 6,
   'wicket': 7,
+  'bye': 8,
+  'legbye': 9,
 };
 const _BallballTypeValueEnumMap = {
   0: BallType.runs,
@@ -171,6 +173,8 @@ const _BallballTypeValueEnumMap = {
   5: BallType.noballLegbye,
   6: BallType.noballBye,
   7: BallType.wicket,
+  8: BallType.bye,
+  9: BallType.legbye,
 };
 
 Id _ballGetId(Ball object) {

@@ -11,6 +11,9 @@ class ScoreService {
   late final ScoreboardService _scoreboardService;
   late final BatterService _batterService;
   late final BallService _ballService;
+  late final PartnershipService _partnershipService;
+  late final PartnershipBatterInfoService _partnershipBatterInfoService;
+  late final PartnershipInfoService _partnershipInfoService;
 
   set scoreboardService(ScoreboardService scoreboardService) {
     _scoreboardService = scoreboardService;
@@ -22,6 +25,18 @@ class ScoreService {
 
   set ballService(BallService ballService) {
     _ballService = ballService;
+  }
+
+  set partnershipService(PartnershipService service) {
+    _partnershipService = service;
+  }
+
+  set partnershipBatterInfoService(PartnershipBatterInfoService service) {
+    _partnershipBatterInfoService = service;
+  }
+
+  set partnershipInfoService(PartnershipInfoService service) {
+    _partnershipInfoService = service;
   }
 
   // Create the new score for the match and add the match  to the score.
@@ -91,10 +106,38 @@ class ScoreService {
     final newscore = score.copyWith();
     final striker = score.striker.value!;
     Batter? newbatter;
+    PartnershipBatterInfo? newPartnershipBatter;
+    PartnershipInfo partnershipInfo;
+    late Partnership partnership;
     final ball = Ball();
 
+    // partnership entry need to be resued that why this approach is different from the scorebaord method.
+    await _isar.writeTxn(() async {
+      final result = await _partnershipService.entryExists(
+          players: score.playersOnCrease.toList(), matchId: match.id);
+      if (result == null) {
+        partnership = await _partnershipService.createPartnership(
+            players: score.playersOnCrease.toList(),
+            match: match,
+            partnershipOrder: newscore.nextPartnershipOrder++);
+        newscore.partnership.value = partnership;
+      } else {
+        partnership = result;
+      }
+    });
+
+    // get partnerhsip info
+    partnershipInfo = await _partnershipInfoService.getOrCreatePartnershipInfo(
+        partnership: partnership, match: match);
+
+    // create or get the batter
     if (type != RunButtonType.wide) {
       newbatter = await _batterService.getBatter(player: striker, match: match);
+
+      //gets the partnership batter;
+      newPartnershipBatter =
+          await _partnershipBatterInfoService.getOrCreateBatter(
+              player: striker, partnership: partnership, match: match);
     }
 
     // add the newscore to db.
@@ -110,60 +153,111 @@ class ScoreService {
           position: newscore.nextBattingPostion++,
         );
         newscore.socreboard.value = scoreboard;
-      }
-
-      // scoreboard entry compled
+      } // scoreboard entry compled
 
       switch (type) {
         case RunButtonType.runs:
           newscore.ballsBowed++;
-          ball.setBallTypeForRuns(runs: runs);
+
           newbatter!.addRuns(runs: runs);
           newbatter.balls++;
+
+          newPartnershipBatter!.addRuns(runs: runs);
+          newPartnershipBatter.balls++;
+
+          partnershipInfo.balls++;
+
+          ball.setBallTypeForRuns(runs: runs);
 
         case RunButtonType.wide:
           newscore.extras++;
           newscore.wide++;
           newscore.runs++;
+
+          partnershipInfo.runs++;
+
           ball.ballType = BallType.wide;
 
         case RunButtonType.byes:
           newscore.ballsBowed++;
           newscore.extras++;
-          ball.ballType = BallType.runs;
+
           newbatter!.balls++;
           newbatter.dots++;
 
+          newPartnershipBatter!.balls++;
+          newPartnershipBatter.dots++;
+
+          partnershipInfo.balls++;
+
+          ball.ballType = BallType.bye;
         case RunButtonType.legbyes:
           newscore.ballsBowed++;
           newscore.extras++;
-          ball.ballType = BallType.runs;
+
           newbatter!.balls++;
           newbatter.dots++;
+
+          newPartnershipBatter!.balls++;
+          newPartnershipBatter.dots++;
+
+          partnershipInfo.balls++;
+
+          ball.ballType = BallType.legbye;
 
         case RunButtonType.noball:
           newscore.extras++;
           newscore.noball++;
-          ball.ballType = BallType.noball;
+          newscore.runs++;
+
           newbatter!.addRuns(runs: runs);
           newbatter.balls++;
+
+          newPartnershipBatter!.addRuns(runs: runs);
+          newPartnershipBatter.balls++;
+
+          partnershipInfo.runs++;
+          partnershipInfo.balls++;
+
+          ball.ballType = BallType.noball;
 
         case RunButtonType.noballByes:
           newscore.extras++;
           newscore.noball++;
-          ball.ballType = BallType.noballBye;
+          newscore.runs++;
+
           newbatter!.balls++;
           newbatter.dots++;
+
+          newPartnershipBatter!.balls++;
+          newPartnershipBatter.dots++;
+
+          partnershipInfo.runs++;
+          partnershipInfo.balls++;
+
+          ball.ballType = BallType.noballBye;
 
         case RunButtonType.noballLegByes:
           newscore.extras++;
           newscore.noball++;
-          ball.ballType = BallType.noballLegbye;
+          newscore.runs++;
+
           newbatter!.balls++;
           newbatter.dots++;
+
+          newPartnershipBatter!.balls++;
+          newPartnershipBatter.dots++;
+
+          partnershipInfo.runs++;
+          partnershipInfo.balls++;
+
+          ball.ballType = BallType.noballLegbye;
       }
       if (newbatter != null) {
         await _isar.batters.put(newbatter);
+      }
+      if (newPartnershipBatter != null) {
+        await _isar.partnershipBatterInfos.put(newPartnershipBatter);
       }
 
       switch (type) {
@@ -196,18 +290,36 @@ class ScoreService {
       await ball.player.save();
       await ball.match.save();
 
+      // this is for bye wide legbyes no ball
       newscore.addRuns(runs: runs);
-      newscore.batter.value = newbatter; // batter
+
+      // object linking
       newscore.ball.value = ball; // ball
+      newscore.batter.value = newbatter; // batter
+      //scoreboard is initialized in scoreboard entry,
+      newscore.partnershipBatterInfo.value = newPartnershipBatter;
+
+      // partnership info linking.
+      // this is for bye wide legbyes no ball
+      partnershipInfo.addRuns(runs: runs);
+      await _isar.partnershipInfos.put(partnershipInfo);
+      newscore.partnerShipInfo.value = partnershipInfo;
+
+      //partnership is lined in partnership section.
+
       await _isar.scores.put(newscore); // putting.
 
-      await newscore.match.save(); // match save save.
-      await newscore.playersOnCrease.save(); // match save
+      await newscore.playersOnCrease
+          .save(); //  save copied form previous scoreboard
+      await newscore.updateStriker(
+          striker: striker, runs: runs, previousOver: score.ballsBowed);
+      await newscore.match.save(); // copied form previous score board.
       await newscore.ball.save(); //ball save
       await newscore.batter.save(); // batter save
       await newscore.socreboard.save(); // object save
-      await newscore.updateStriker(
-          striker: striker, runs: runs, previousOver: score.ballsBowed);
+      await newscore.partnership.save();
+      await newscore.partnerShipInfo.save();
+      await newscore.partnershipBatterInfo.save();
     });
   }
 
@@ -215,6 +327,9 @@ class ScoreService {
     final ball = score.ball.value;
     final batter = score.batter.value;
     final scoreboard = score.socreboard.value;
+    final partnershipBatterInfo = score.partnershipBatterInfo.value;
+    final partnershipInfo = score.partnerShipInfo.value;
+    final partnership = score.partnership.value;
 
     if (ball != null) {
       await _ballService.deleteBall(ball.id);
@@ -225,6 +340,20 @@ class ScoreService {
     if (scoreboard != null) {
       await _scoreboardService.deleteScorebaord(scoreboard.id);
     }
+
+    if (partnershipBatterInfo != null) {
+      await _partnershipBatterInfoService
+          .deleteBatterInfo(partnershipBatterInfo.id);
+    }
+
+    if (partnershipInfo != null) {
+      await _partnershipInfoService.deletePartnershipInfo(partnershipInfo.id);
+    }
+
+    if (partnership != null) {
+      await _partnershipService.deletePartnership(partnership.id);
+    }
+
     await _isar.writeTxn(() async {
       await _isar.scores.delete(score.id);
     });

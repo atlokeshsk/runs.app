@@ -22,6 +22,7 @@ class Score {
       required this.wide,
       required this.noball,
       required this.nextBattingPostion,
+      required this.nextPartnershipOrder,
       required this.currentOvers})
       : datetime = DateTime.now();
 
@@ -41,6 +42,7 @@ class Score {
           wide: 0,
           noball: 0,
           nextBattingPostion: 0,
+          nextPartnershipOrder: 0,
         );
 
   int runs;
@@ -57,6 +59,7 @@ class Score {
   int wide;
   int noball;
   int nextBattingPostion;
+  int nextPartnershipOrder;
   DateTime datetime;
 
   final playersOnCrease = IsarLinks<Player>();
@@ -179,21 +182,21 @@ class Score {
 
   Score copyWith() {
     return Score(
-      runs: runs,
-      currentOvers: currentOvers,
-      ballsBowed: ballsBowed,
-      wicketsFall: wicketsFall,
-      dots: dots,
-      ones: ones,
-      twos: twos,
-      threes: threes,
-      fours: fours,
-      sixes: sixes,
-      extras: extras,
-      wide: wide,
-      noball: noball,
-      nextBattingPostion: nextBattingPostion,
-    )
+        runs: runs,
+        currentOvers: currentOvers,
+        ballsBowed: ballsBowed,
+        wicketsFall: wicketsFall,
+        dots: dots,
+        ones: ones,
+        twos: twos,
+        threes: threes,
+        fours: fours,
+        sixes: sixes,
+        extras: extras,
+        wide: wide,
+        noball: noball,
+        nextBattingPostion: nextBattingPostion,
+        nextPartnershipOrder: nextPartnershipOrder)
       ..playersOnCrease.addAll(playersOnCrease)
       ..match.value = match.value;
   }
