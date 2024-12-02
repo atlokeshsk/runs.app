@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:runs/helper/helper.dart';
 import 'package:runs/models/models.dart';
+import 'package:runs/screens/match_center/score_page/secondary_info.dart';
 import 'package:runs/services/services.dart';
 
 class SelectBatsmanScreen extends StatelessWidget {
@@ -16,57 +18,54 @@ class SelectBatsmanScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Select Batsman'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder<List<Player>>(
-                stream: context.read<PlayerService>().getBatsmans(
-                    teamId: teamId, matchId: score.match.value!.id),
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<List<Player>> snapshot,
-                ) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        snapshot.error.toString(),
-                      ),
-                    );
-                  } else {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.none:
-                        return Center(child: Text('Connection State None'));
-                      case ConnectionState.waiting:
-                        return Center(child: CircularProgressIndicator());
-                      case ConnectionState.active:
-                        final batsmans = snapshot.data!;
-                        if (batsmans.isEmpty) {
-                          return Center(child: Text('Add Players'));
-                        } else {
-                          return SelectionList(
-                              score: score, batsmans: batsmans);
-                        }
-                      case ConnectionState.done:
-                        return Center(child: Text('Done'));
-                    }
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<List<Player>>(
+              stream: context
+                  .read<PlayerService>()
+                  .getBatsmans(teamId: teamId, matchId: score.match.value!.id),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<Player>> snapshot,
+              ) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      snapshot.error.toString(),
+                    ),
+                  );
+                } else {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                      return Center(child: Text('Connection State None'));
+                    case ConnectionState.waiting:
+                      return Center(child: CircularProgressIndicator());
+                    case ConnectionState.active:
+                      final batsmans = snapshot.data!;
+                      if (batsmans.isEmpty) {
+                        return Center(child: Text('Add Players'));
+                      } else {
+                        return SelectionList(score: score, batsmans: batsmans);
+                      }
+                    case ConnectionState.done:
+                      return Center(child: Text('Done'));
                   }
-                },
-              ),
+                }
+              },
             ),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                // will display th pop up dialog to add new player.
-                onPressed: () {
-                  context.push('/createplayer/$teamId');
-                },
-                child: Text('ADD / CREATE PLAYER'),
-              ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              // will display th pop up dialog to add new player.
+              onPressed: () {
+                context.push('/createplayer/$teamId');
+              },
+              child: Text('ADD / CREATE PLAYER'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -133,7 +132,30 @@ class _SelectionListState extends State<SelectionList> {
 
       if (player1Batting && player2Batting) {
         // need to show alert dialog.
-        AlertDialog();
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Not Allowed'),
+              content: const SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text('You are not allowed to select'),
+                    Text('batsman now'),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
         return;
       }
       // check the wheter player already present in the player on creae
@@ -185,16 +207,90 @@ class _SelectionListState extends State<SelectionList> {
         },
       );
     }
-    return ListView.builder(
+    return ListView.separated(
+      separatorBuilder: (context, index) => Divider(
+        height: 1, // Minimal height for the divider
+        thickness: 0.1, // Thin line for minimal visual impact
+        color: Colors.black,
+        indent: 20,
+        endIndent: 20,
+      ),
       itemCount: widget.batsmans.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(batsmans[index].name),
-          selected: score.playersOnCrease.contains(batsmans[index]),
-          selectedTileColor: Colors.orange.shade200,
-          onTap: () async {
-            await togglePlayersOnCrease(player: batsmans[index]);
+        final player = batsmans[index];
+        final isSelected = score.playersOnCrease.contains(player);
+        return GestureDetector(
+          onTap: () {
+            togglePlayersOnCrease(player: player);
           },
+          child: Container(
+            color: isSelected ? Colors.orange.shade100 : null,
+            height: 50,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+              child: Row(
+                children: [
+                  Text('${index + 1}'),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  CircleAvatar(
+                    maxRadius: 13,
+                    child: Text(
+                      player.name.getInitials(),
+                      style: TextStyle(fontSize: 11),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(child: Text(player.name)),
+                  BattterStatusInfo(
+                      playerId: player.id,
+                      matchId: score.match.value!.id,
+                      presentInPlayerOnCreae: isSelected),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class BattterStatusInfo extends StatelessWidget {
+  const BattterStatusInfo(
+      {super.key,
+      required this.playerId,
+      required this.matchId,
+      required this.presentInPlayerOnCreae});
+
+  final int playerId;
+  final int matchId;
+  final bool presentInPlayerOnCreae;
+
+  @override
+  Widget build(BuildContext context) {
+    final batterService = context.read<BatterService>();
+    return FutureBuilder<Batter?>(
+      future: batterService.entryExists(playerId: playerId, matchId: matchId),
+      builder: (context, snapshot) {
+        final batter = snapshot.data;
+        if (batter == null) {
+          return presentInPlayerOnCreae ? Text('0(0)') : SizedBox.shrink();
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            batter.status == BatterStatus.retiredHurt
+                ? Text('Retired Hurt')
+                : Text(''),
+            SizedBox(width: 10),
+            Text('${batter.runs}(${batter.balls})')
+          ],
         );
       },
     );

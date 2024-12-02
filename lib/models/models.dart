@@ -5,3 +5,6 @@ export 'score.dart';
 export 'batter.dart';
 export 'ball.dart';
 export 'scoreboard.dart';
+export 'partnership.dart';
+export 'partnership_info.dart';
+export 'partnership_batter_info.dart';

@@ -135,6 +135,24 @@ const ScoreSchema = CollectionSchema(
       name: r'socreboard',
       target: r'ScoreBoard',
       single: true,
+    ),
+    r'partnershipBatterInfo': LinkSchema(
+      id: 7664914619158758929,
+      name: r'partnershipBatterInfo',
+      target: r'PartnershipBatterInfo',
+      single: true,
+    ),
+    r'partnerShipInfo': LinkSchema(
+      id: 7935968814664057481,
+      name: r'partnerShipInfo',
+      target: r'PartnershipInfo',
+      single: true,
+    ),
+    r'partnership': LinkSchema(
+      id: -9129062248313909667,
+      name: r'partnership',
+      target: r'Partnership',
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -256,7 +274,10 @@ List<IsarLinkBase<dynamic>> _scoreGetLinks(Score object) {
     object.match,
     object.ball,
     object.batter,
-    object.socreboard
+    object.socreboard,
+    object.partnershipBatterInfo,
+    object.partnerShipInfo,
+    object.partnership
   ];
 }
 
@@ -270,6 +291,15 @@ void _scoreAttach(IsarCollection<dynamic> col, Id id, Score object) {
   object.batter.attach(col, col.isar.collection<Batter>(), r'batter', id);
   object.socreboard
       .attach(col, col.isar.collection<ScoreBoard>(), r'socreboard', id);
+  object.partnershipBatterInfo.attach(
+      col,
+      col.isar.collection<PartnershipBatterInfo>(),
+      r'partnershipBatterInfo',
+      id);
+  object.partnerShipInfo.attach(
+      col, col.isar.collection<PartnershipInfo>(), r'partnerShipInfo', id);
+  object.partnership
+      .attach(col, col.isar.collection<Partnership>(), r'partnership', id);
 }
 
 extension ScoreQueryWhereSort on QueryBuilder<Score, Score, QWhere> {
@@ -1312,6 +1342,46 @@ extension ScoreQueryLinks on QueryBuilder<Score, Score, QFilterCondition> {
   QueryBuilder<Score, Score, QAfterFilterCondition> socreboardIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'socreboard', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> partnershipBatterInfo(
+      FilterQuery<PartnershipBatterInfo> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnershipBatterInfo');
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition>
+      partnershipBatterInfoIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipBatterInfo', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> partnerShipInfo(
+      FilterQuery<PartnershipInfo> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnerShipInfo');
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> partnerShipInfoIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnerShipInfo', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> partnership(
+      FilterQuery<Partnership> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnership');
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> partnershipIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnership', 0, true, 0, true);
     });
   }
 }

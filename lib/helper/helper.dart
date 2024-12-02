@@ -14,3 +14,16 @@ extension CricketMetrics on int {
     return ((this - currentRuns) / overRemaining).toStringAsFixed(2);
   }
 }
+
+extension StringExtensions on String {
+  /// Gets the initials from a name.
+  /// If the name has multiple words, it takes the first letter of the first two words.
+  /// If the name has only one word, it takes the first two letters.
+  String getInitials() {
+    final words = split(' ');
+    if (words.length > 1) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return substring(0, 2).toUpperCase();
+  }
+}

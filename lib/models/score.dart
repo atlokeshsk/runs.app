@@ -62,9 +62,14 @@ class Score {
   final playersOnCrease = IsarLinks<Player>();
   final striker = IsarLink<Player>();
   final match = IsarLink<Match>();
+
+  //  for undo operations
   final ball = IsarLink<Ball>();
   final batter = IsarLink<Batter>();
   final socreboard = IsarLink<ScoreBoard>();
+  final partnershipBatterInfo = IsarLink<PartnershipBatterInfo>();
+  final partnerShipInfo = IsarLink<PartnershipInfo>();
+  final partnership = IsarLink<Partnership>();
 
   void addRuns({required Runs runs}) {
     switch (runs) {
