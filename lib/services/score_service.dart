@@ -182,9 +182,6 @@ class ScoreService {
         case RunButtonType.noballLegByes:
           // compute the over for the newscore
           if (newscore.ballsBowed % 6 == 0) {
-            print('executed');
-            print('balls bowled ${newscore.ballsBowed}');
-            print(newscore.ballsBowed ~/ 6);
             newscore.currentOvers = newscore.ballsBowed ~/ 6;
           }
       }

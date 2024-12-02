@@ -11,7 +11,7 @@ class RecentBalls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ballService = context.read<BallService>();
-    final ScrollController _scrollController = ScrollController();
+    final ScrollController scrollController = ScrollController();
     final height = MediaQuery.of(context).size.height * 0.06;
 
     return Container(
@@ -26,15 +26,15 @@ class RecentBalls extends StatelessWidget {
         builder: (context, snapshot) {
           final balls = snapshot.data ?? [];
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_scrollController.hasClients) {
-              _scrollController.jumpTo(
-                _scrollController.position.maxScrollExtent,
+            if (scrollController.hasClients) {
+              scrollController.jumpTo(
+                scrollController.position.maxScrollExtent,
               );
             }
           });
 
           return ListView.builder(
-            controller: _scrollController,
+            controller: scrollController,
             scrollDirection: Axis.horizontal,
             itemCount: balls.length,
             itemBuilder: (context, index) {

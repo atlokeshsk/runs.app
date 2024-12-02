@@ -7,7 +7,6 @@ class PlayerService {
   final Isar _isar;
 
   // returns the players who are eligibe to bat.
-  //TODO: need to add filters to get only the players eligible to bat.
   Stream<List<Player>> getBatsmans({
     required int teamId,
     required int matchId,

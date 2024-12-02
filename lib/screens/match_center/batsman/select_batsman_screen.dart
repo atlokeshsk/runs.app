@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:runs/helper/helper.dart';
 import 'package:runs/models/models.dart';
-import 'package:runs/screens/match_center/score_page/secondary_info.dart';
 import 'package:runs/services/services.dart';
 
 class SelectBatsmanScreen extends StatelessWidget {

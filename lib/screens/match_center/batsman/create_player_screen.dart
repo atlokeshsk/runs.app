@@ -33,7 +33,6 @@ class _CreatePlayerScreenState extends State<CreatePlayerScreen> {
                   final player = await showModalBottomSheet<Player>(
                     context: context,
                     builder: (BuildContext context) {
-                      String name = "";
                       return SizedBox(
                         child: Center(
                           child: Padding(
@@ -48,7 +47,6 @@ class _CreatePlayerScreenState extends State<CreatePlayerScreen> {
                                 SizedBox(height: 10),
                                 FilledButton(
                                   onPressed: () async {
-                                    print("name given to fthe function$name");
                                     final player = await context
                                         .read<PlayerService>()
                                         .createPlayerAndToTeam(

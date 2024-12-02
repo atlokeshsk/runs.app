@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:runs/models/models.dart';
-import 'package:runs/router.dart';
-import 'package:runs/screens/home/match_page.dart';
 import 'package:runs/services/services.dart';
 
 import 'control_section_provider.dart';
@@ -43,7 +41,6 @@ class ControlSection extends StatelessWidget {
       height: screenHeight * 0.20,
       child: Builder(
         builder: (context) {
-          var score = context.watch<Score>();
           var controlState = context.watch<ControlSectionState>();
 
           switch (controlState.state) {

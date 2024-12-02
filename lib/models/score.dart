@@ -123,7 +123,7 @@ class Score {
       required Runs runs,
       required int previousOver}) async {
     // this for noball wide extras.
-    if (this.ballsBowed == previousOver) {
+    if (ballsBowed == previousOver) {
       if (getRuns(runs) % 2 != 0) {
         for (final player in playersOnCrease) {
           if (player.id != striker.id) {
@@ -139,7 +139,6 @@ class Score {
     else if (getRuns(runs) % 2 != 0 && ballsBowed % 6 != 0) {
       for (final player in playersOnCrease) {
         if (player.id != striker.id) {
-          print(player.name);
           this.striker.value = player;
           break;
         }

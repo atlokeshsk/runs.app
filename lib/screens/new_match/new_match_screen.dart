@@ -60,7 +60,6 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
               GestureDetector(
                 onTap: () async {
                   final team = await context.pushNamed<Team>('selectTeam');
-                  print(team);
                   setState(() {
                     _team = team;
                   });

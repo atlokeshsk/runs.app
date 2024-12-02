@@ -50,7 +50,6 @@ class BatterService {
     if (batter == null) {
       newbatter = Batter();
     } else {
-      print("battter id -->" + batter.id.toString());
       newbatter = batter.copyWith();
     }
     await _isar.writeTxn(

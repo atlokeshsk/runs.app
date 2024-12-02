@@ -16,7 +16,6 @@ class _SelectTeamScreenState extends State<SelectTeamScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _teamNameController.dispose();
     super.dispose();
   }
@@ -38,7 +37,6 @@ class _SelectTeamScreenState extends State<SelectTeamScreen> {
                   final team = await showModalBottomSheet<Team>(
                     context: context,
                     builder: (BuildContext context) {
-                      String name = "";
                       return SizedBox(
                         child: Center(
                           child: Padding(
@@ -53,12 +51,10 @@ class _SelectTeamScreenState extends State<SelectTeamScreen> {
                                 SizedBox(height: 10),
                                 FilledButton(
                                   onPressed: () async {
-                                    print("name given to fthe function$name");
                                     final team = await context
                                         .read<TeamService>()
                                         .createNewTeam(
                                             _teamNameController.text);
-                                    print(team);
                                     context.pop(team);
                                   },
                                   child: Text('Create Team'),

@@ -22,7 +22,6 @@ class ScorePage extends StatelessWidget {
       child: StreamBuilder<List<Score>>(
         stream: context.read<ScoreService>().getLatestScore(matchId: matchId),
         builder: (context, snapshot) {
-          print('stream rebuiilded');
           if (snapshot.hasError) {
             return Center(
               child: Text(snapshot.error.toString()),
