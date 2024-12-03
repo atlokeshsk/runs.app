@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:runs/helper/helper.dart';
+import 'package:runs/main.dart';
 import 'package:runs/models/models.dart';
 
 class SecondaryInfo extends StatelessWidget {
@@ -10,6 +11,7 @@ class SecondaryInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final score = context.read<Score>();
     final match = score.match.value!;
+    final scale = context.read<ScalingProvider>().scaleFactor;
     return Column(
       children: [
         Row(
@@ -20,7 +22,7 @@ class SecondaryInfo extends StatelessWidget {
             Text('CRR-${score.runs.currentRunRate(score.ballsBowed)}')
           ],
         ),
-        if (match.innings == Innings.second) SizedBox(height: 10),
+        if (match.innings == Innings.second) SizedBox(height: 10 * scale),
         if (match.innings == Innings.second)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

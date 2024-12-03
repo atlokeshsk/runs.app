@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:runs/screens/match_center/score_page/score_page.dart';
-import 'package:runs/screens/match_center/scorecard_page.dart';
+import 'package:runs/screens/match_center/scorecard_page/scorecard_page.dart';
 
-import 'ball_page.dart';
-
+import 'ball_page/ball_page.dart';
 
 class MatchCenterScreen extends StatelessWidget {
   const MatchCenterScreen({

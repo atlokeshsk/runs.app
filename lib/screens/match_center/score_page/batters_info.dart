@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:runs/main.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/services/services.dart';
 
@@ -10,17 +11,19 @@ class BattersInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final score = context.read<Score>();
-    final fontSize = MediaQuery.of(context).size.width *
-        0.035; // Adjust multiplier as needed
-    final headerStyle =
-        TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize);
+    // Adjust multiplier as needed
+    final headerStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+    );
+    final scale = context.read<ScalingProvider>().scaleFactor;
 
     // players on crease
     final player1 = score.playersOnCrease.elementAtOrNull(0);
     final player2 = score.playersOnCrease.elementAtOrNull(1);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+      padding:
+          EdgeInsets.symmetric(vertical: 10.0 * scale, horizontal: 20 * scale),
       child: Column(
         children: [
           Row(
@@ -44,14 +47,14 @@ class BattersInfo extends StatelessWidget {
               Expanded(child: Center(child: Text('6s', style: headerStyle))),
             ],
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 10 * scale),
           (player1 == null)
               ? BatterEmptyRow()
               : BatterRow(
                   player: player1,
                   isStriker: player1.id == score.striker.value?.id,
                 ),
-          SizedBox(height: 3),
+          SizedBox(height: 3 * scale),
           (player2 == null)
               ? BatterEmptyRow()
               : BatterRow(
@@ -95,12 +98,12 @@ class BatterRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scoreService = context.read<ScoreService>();
     final score = context.read<Score>();
-    final fontSize =
-        MediaQuery.of(context).size.width * 0.03; // Slightly larger font
-    final textStyle = TextStyle(
-        fontSize: fontSize, fontWeight: FontWeight.w500); // Clear font weight
+
+    final textStyle =
+        TextStyle(fontWeight: FontWeight.w500); // Clear font weight
     final backgroundColor =
         isStriker ? Colors.orange.shade500 : Colors.transparent;
+    final scale = context.read<ScalingProvider>().scaleFactor;
 
     return FutureBuilder<Batter?>(
       future: context
@@ -115,10 +118,11 @@ class BatterRow extends StatelessWidget {
           },
           child: Container(
             // Only background color changes for the striker
-            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+            padding: EdgeInsets.symmetric(
+                vertical: 6.0 * scale, horizontal: 8.0 * scale),
             decoration: BoxDecoration(
                 color: backgroundColor,
-                borderRadius: BorderRadius.circular(6.0)),
+                borderRadius: BorderRadius.circular(6.0 * scale)),
             // Compact padding
             child: Row(
               children: [

@@ -72,12 +72,13 @@ class Batter {
 }
 
 enum BatterStatus {
-  out,
-  runout,
   bowled,
-  lbw,
   caugth,
-  playing,
+  stupmed,
+  lbw,
+  runout,
+  retiredOut,
   retiredHurt,
+  playing,
   notout,
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:runs/main.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/services/services.dart';
 
@@ -12,12 +13,12 @@ class RecentBalls extends StatelessWidget {
   Widget build(BuildContext context) {
     final ballService = context.read<BallService>();
     final ScrollController scrollController = ScrollController();
-    final height = MediaQuery.of(context).size.height * 0.06;
+    final scale = context.read<ScalingProvider>().scaleFactor;
 
     return Container(
-      height: height,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      height: 45 * scale,
+      margin: EdgeInsets.symmetric(vertical: 8.0 * scale),
+      padding: EdgeInsets.symmetric(horizontal: 12.0 * scale),
       child: FutureBuilder<List<Ball>>(
         future: ballService.getCurrentOverBalls(
           match: score.match.value!,
@@ -55,6 +56,7 @@ class BallAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color color;
+    final scale = context.read<ScalingProvider>().scaleFactor;
 
     // Assign colors based on ball type
     switch (ball.ballType) {
@@ -82,14 +84,14 @@ class BallAvatar extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+      padding: EdgeInsets.symmetric(horizontal: 6.0 * scale),
       child: CircleAvatar(
         radius: 18, // Slightly larger for better visibility
         backgroundColor: color,
         foregroundColor: Colors.white,
         child: Text(
           ball.name,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
           ),

@@ -19,8 +19,10 @@ void main() async {
   final partnershipBatterInfoService =
       PartnershipBatterInfoService(isarService.isar);
 
+  // MatchService
   matchService.scoreService = scoreService;
 
+  // ScoreService
   scoreService.scoreboardService = scoreboardServie;
   scoreService.batterService = batterService;
   scoreService.ballService = ballService;
@@ -51,14 +53,33 @@ void main() async {
   );
 }
 
+class ScalingProvider {
+  final double scaleFactor;
+
+  ScalingProvider({required this.scaleFactor});
+}
+
 class RunsApp extends StatelessWidget {
   const RunsApp({super.key});
+  final double baseHeight = 932.0;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: router,
-      theme: ThemeData.light(),
+    final screenHeight = MediaQuery.of(context).size.height;
+    final double scale = screenHeight / baseHeight;
+    return Provider<ScalingProvider>(
+      create: (context) => ScalingProvider(scaleFactor: scale),
+      child: Builder(builder: (context) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(scale),
+          ),
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: ThemeData.light(),
+          ),
+        );
+      }),
     );
   }
 }

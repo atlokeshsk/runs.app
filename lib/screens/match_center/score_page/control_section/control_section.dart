@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:runs/main.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/services/services.dart';
 
@@ -34,36 +35,40 @@ class ControlSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final scale = context.read<ScalingProvider>().scaleFactor;
     return Container(
       color: Colors.orange.shade500,
       width: double.infinity,
-      height: screenHeight * 0.20,
-      child: Builder(
-        builder: (context) {
-          var controlState = context.watch<ControlSectionState>();
+      height: 200 * scale,
+      child: SingleChildScrollView(
+        child: Builder(
+          builder: (context) {
+            var controlState = context.watch<ControlSectionState>();
 
-          switch (controlState.state) {
-            case Control.mainMenu:
-              return MainButtonSection();
-            case Control.lebbye:
-              return LegbyeScreen();
-            case Control.bye:
-              return ByeScreen();
-            case Control.wide:
-              return WideScreen();
-            case Control.noball:
-              return NoballScreen();
-            case Control.noballLegbye:
-              return NoballLegbyeScreen();
-            case Control.noballBye:
-              return NoballByeScreen();
-            case Control.selectBatsman:
-              return SelectBatsman();
-            case Control.selectStriker:
-              return SelectStriker();
-          }
-        },
+            switch (controlState.state) {
+              case Control.mainMenu:
+                return MainButtonSection();
+              case Control.lebbye:
+                return LegbyeScreen();
+              case Control.bye:
+                return ByeScreen();
+              case Control.wide:
+                return WideScreen();
+              case Control.noball:
+                return NoballScreen();
+              case Control.noballLegbye:
+                return NoballLegbyeScreen();
+              case Control.noballBye:
+                return NoballByeScreen();
+              case Control.selectBatsman:
+                return SelectBatsman();
+              case Control.selectStriker:
+                return SelectStriker();
+              case Control.out:
+                return OutScreen();
+            }
+          },
+        ),
       ),
     );
   }
@@ -76,13 +81,13 @@ class MainButtonSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scale = context.read<ScalingProvider>().scaleFactor;
     return Center(
       child: GridView.count(
         crossAxisCount: 5,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         crossAxisSpacing: 7,
-        mainAxisSpacing: 10,
         childAspectRatio: 1.5,
         children: [
           RunsButton(runs: Runs.one, label: '1', type: RunButtonType.runs),
@@ -105,6 +110,7 @@ class MainButtonSection extends StatelessWidget {
           ),
           ModifierButtons(label: 'NB', modifier: Modifier.noball),
           UndoButton(),
+          ModifierButtons(label: 'Out', modifier: Modifier.out),
         ],
       ),
     );
@@ -184,6 +190,8 @@ class ModifierButtons extends StatelessWidget {
             controlState.changeSection(Control.noballLegbye);
           case Modifier.noballBye:
             controlState.changeSection(Control.noballBye);
+          case Modifier.out:
+            controlState.changeSection(Control.out);
         }
       },
       child: Text(
@@ -607,6 +615,86 @@ class UndoButton extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+}
+
+class OutScreen extends StatelessWidget {
+  const OutScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final score = context.read<Score>();
+    final scoreService = context.read<ScoreService>();
+    final textStyle = TextStyle(
+        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16);
+    return Column(
+      children: [
+        TextButton(
+          onPressed: () {
+            context.read<ControlSectionState>().changeSection(Control.mainMenu);
+          },
+          child: Text(
+            'X Wicket',
+            style: textStyle,
+          ),
+        ),
+        Wrap(
+          spacing: 8.0, // gap between adjacent chips
+          runSpacing: 4.0,
+          children: [
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'Bowled',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'Caught',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'Stumped',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'LBW',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'Run Out',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'Retired',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'Bowled',
+                style: textStyle,
+              ),
+            ),
+          ], // gap between lines
+        )
+      ],
     );
   }
 }

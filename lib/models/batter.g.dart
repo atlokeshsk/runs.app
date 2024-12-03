@@ -141,7 +141,7 @@ Batter _batterDeserialize(
   object.sixes = reader.readLong(offsets[6]);
   object.status =
       _BatterstatusValueEnumMap[reader.readByteOrNull(offsets[7])] ??
-          BatterStatus.out;
+          BatterStatus.bowled;
   object.threes = reader.readLong(offsets[8]);
   object.twos = reader.readLong(offsets[9]);
   return object;
@@ -170,7 +170,7 @@ P _batterDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 7:
       return (_BatterstatusValueEnumMap[reader.readByteOrNull(offset)] ??
-          BatterStatus.out) as P;
+          BatterStatus.bowled) as P;
     case 8:
       return (reader.readLong(offset)) as P;
     case 9:
@@ -181,24 +181,26 @@ P _batterDeserializeProp<P>(
 }
 
 const _BatterstatusEnumValueMap = {
-  'out': 0,
-  'runout': 1,
-  'bowled': 2,
+  'bowled': 0,
+  'caugth': 1,
+  'stupmed': 2,
   'lbw': 3,
-  'caugth': 4,
-  'playing': 5,
+  'runout': 4,
+  'retiredOut': 5,
   'retiredHurt': 6,
-  'notout': 7,
+  'playing': 7,
+  'notout': 8,
 };
 const _BatterstatusValueEnumMap = {
-  0: BatterStatus.out,
-  1: BatterStatus.runout,
-  2: BatterStatus.bowled,
+  0: BatterStatus.bowled,
+  1: BatterStatus.caugth,
+  2: BatterStatus.stupmed,
   3: BatterStatus.lbw,
-  4: BatterStatus.caugth,
-  5: BatterStatus.playing,
+  4: BatterStatus.runout,
+  5: BatterStatus.retiredOut,
   6: BatterStatus.retiredHurt,
-  7: BatterStatus.notout,
+  7: BatterStatus.playing,
+  8: BatterStatus.notout,
 };
 
 Id _batterGetId(Batter object) {

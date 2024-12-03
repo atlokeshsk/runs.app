@@ -6,12 +6,14 @@ class BallService {
 
   final Isar _isar;
 
+  // Delete the ball for undo.
   Future<void> deleteBall(int id) async {
     await _isar.writeTxn(() async {
       await _isar.balls.delete(id);
     });
   }
 
+  // Get the current over balls for displaying in main section.
   Future<List<Ball>> getCurrentOverBalls(
       {required Match match, required int over}) async {
     return await _isar.balls

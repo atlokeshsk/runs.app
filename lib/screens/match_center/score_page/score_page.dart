@@ -41,6 +41,7 @@ class ScorePage extends StatelessWidget {
                       .read<ControlSectionState>()
                       .changeSection(Control.mainMenu);
                 });
+
                 final score = snapshot.data![0];
                 final match = score.match.value!;
                 return Provider<Score>.value(

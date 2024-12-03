@@ -24,11 +24,13 @@ class PlayerService {
               .or()
               .statusEqualTo(BatterStatus.caugth)
               .or()
+              .statusEqualTo(BatterStatus.stupmed)
+              .or()
               .statusEqualTo(BatterStatus.lbw)
               .or()
-              .statusEqualTo(BatterStatus.out)
+              .statusEqualTo(BatterStatus.runout)
               .or()
-              .statusEqualTo(BatterStatus.runout);
+              .statusEqualTo(BatterStatus.retiredOut);
         })
         .sortByName()
         .watch(fireImmediately: true);

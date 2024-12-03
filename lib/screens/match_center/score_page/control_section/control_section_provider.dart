@@ -10,6 +10,7 @@ enum Control {
   noballBye,
   selectBatsman,
   selectStriker,
+  out
 }
 
 enum Modifier {
@@ -19,6 +20,7 @@ enum Modifier {
   noball,
   noballLegbye,
   noballBye,
+  out,
 }
 
 class ControlSectionState extends ChangeNotifier {
