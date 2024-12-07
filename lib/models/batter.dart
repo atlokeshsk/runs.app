@@ -74,8 +74,9 @@ class Batter {
 enum BatterStatus {
   bowled,
   caugth,
-  stupmed,
   lbw,
+  htiwicket,
+  stupmed,
   runout,
   retiredOut,
   retiredHurt,

@@ -644,7 +644,10 @@ class OutScreen extends StatelessWidget {
           runSpacing: 4.0,
           children: [
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await scoreService.bowled(
+                    score: score, wicketType: WicketType.bowled);
+              },
               child: Text(
                 'Bowled',
                 style: textStyle,
@@ -660,14 +663,21 @@ class OutScreen extends StatelessWidget {
             OutlinedButton(
               onPressed: () {},
               child: Text(
-                'Stumped',
+                'LBW',
                 style: textStyle,
               ),
             ),
             OutlinedButton(
               onPressed: () {},
               child: Text(
-                'LBW',
+                'HitWicket',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'Stumped',
                 style: textStyle,
               ),
             ),
@@ -696,7 +706,7 @@ enum WicketType {
   bowled,
   lbw,
   caugth,
-  stumped,
   hitwicket,
+  stumped,
   runout,
 }

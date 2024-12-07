@@ -351,8 +351,8 @@ class ScoreService {
     final match = score.match.value!;
     Score newscore = score.copyWith();
     final striker = score.striker.value!;
-    Batter? newbatter;
-    PartnershipBatterInfo? newPartnershipBatter;
+    Batter newbatter;
+    PartnershipBatterInfo newPartnershipBatter;
     PartnershipInfo partnershipInfo;
     late Partnership partnership;
     final ball = Ball();
@@ -361,11 +361,100 @@ class ScoreService {
     (newscore, partnership) = await getOrCreatePartnershipInfoHelper(
         score: score, newscore: newscore, match: match);
 
-    // get partnerhsip info
+    newbatter = await _batterService.getBatter(player: striker, match: match);
+
+    newPartnershipBatter =
+        await _partnershipBatterInfoService.getOrCreateBatter(
+            player: striker, partnership: partnership, match: match);
+
     partnershipInfo = await _partnershipInfoService.getOrCreatePartnershipInfo(
         partnership: partnership, match: match);
 
-    await _isar.writeTxn(() async {});
+    await _isar.writeTxn(() async {
+      newscore = await getOrCreateScoreboardentryHelper(
+          newscore: newscore, striker: striker, match: match);
+      newscore.ballsBowed++;
+      newscore.wicketsFall++;
+      newscore.dots++;
+
+      newbatter.balls++;
+      newbatter.dots++;
+
+      newPartnershipBatter.balls++;
+      newPartnershipBatter.dots++;
+
+      partnershipInfo.dots++;
+      partnershipInfo.balls++;
+
+      ball.ballType = BallType.wicket;
+
+      switch (wicketType) {
+        case WicketType.bowled:
+          newbatter.status = BatterStatus.bowled;
+          ball.content = 'Bowled';
+        case WicketType.lbw:
+          newbatter.status = BatterStatus.lbw;
+          ball.content = 'lbw';
+        case WicketType.caugth:
+          newbatter.status = BatterStatus.caugth;
+          ball.content = 'caught';
+        case WicketType.hitwicket:
+          newbatter.status = BatterStatus.htiwicket;
+          ball.content = 'hitwicket';
+        case WicketType.stumped:
+          break;
+        case WicketType.runout:
+          break;
+      }
+
+      // compute the over for the newscore
+      if (newscore.ballsBowed % 6 == 0) {
+        newscore.currentOvers == newscore.ballsBowed ~/ 6 - 1;
+      } else {
+        newscore.currentOvers = newscore.ballsBowed ~/ 6;
+      }
+
+      await _isar.batters.put(newbatter);
+      await _isar.partnershipBatterInfos.put(newPartnershipBatter);
+
+      ball.match.value = match;
+      ball.over = newscore.currentOvers;
+      ball.ball = score.ballsBowed % 6 + 1;
+      ball.player.value = striker;
+      ball.name = 'W';
+      await _isar.balls.put(ball);
+      await ball.player.save();
+      await ball.match.save();
+
+      newscore.ball.value = ball;
+      newscore.batter.value = newbatter;
+
+      newscore.partnershipBatterInfo.value = newPartnershipBatter;
+
+      // partnership info linking.
+      // this is for bye wide legbyes no ball
+      await _isar.partnershipInfos.put(partnershipInfo);
+      newscore.partnerShipInfo.value = partnershipInfo;
+      //partnership is lined in partnership section.
+
+      newscore.playersOnCrease.remove(striker);
+
+      await _isar.scores.put(newscore); // putting.
+
+      //partnership is lined in partnership section.
+
+      await _isar.scores.put(newscore); // putting.
+
+      await newscore.playersOnCrease
+          .save(); //  save copied form previous scoreboard
+      await newscore.match.save(); // copied form previous score board.
+      await newscore.ball.save(); //ball save
+      await newscore.batter.save(); // batter save
+      await newscore.socreboard.save(); // object save
+      await newscore.partnership.save();
+      await newscore.partnerShipInfo.save();
+      await newscore.partnershipBatterInfo.save();
+    });
   }
 
   Future<void> undoScore({required Score score}) async {

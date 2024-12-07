@@ -183,22 +183,24 @@ P _batterDeserializeProp<P>(
 const _BatterstatusEnumValueMap = {
   'bowled': 0,
   'caugth': 1,
-  'stupmed': 2,
-  'lbw': 3,
-  'runout': 4,
-  'retiredOut': 5,
-  'retiredHurt': 6,
-  'playing': 7,
+  'lbw': 2,
+  'htiwicket': 3,
+  'stupmed': 4,
+  'runout': 5,
+  'retiredOut': 6,
+  'retiredHurt': 7,
+  'playing': 8,
 };
 const _BatterstatusValueEnumMap = {
   0: BatterStatus.bowled,
   1: BatterStatus.caugth,
-  2: BatterStatus.stupmed,
-  3: BatterStatus.lbw,
-  4: BatterStatus.runout,
-  5: BatterStatus.retiredOut,
-  6: BatterStatus.retiredHurt,
-  7: BatterStatus.playing,
+  2: BatterStatus.lbw,
+  3: BatterStatus.htiwicket,
+  4: BatterStatus.stupmed,
+  5: BatterStatus.runout,
+  6: BatterStatus.retiredOut,
+  7: BatterStatus.retiredHurt,
+  8: BatterStatus.playing,
 };
 
 Id _batterGetId(Batter object) {
