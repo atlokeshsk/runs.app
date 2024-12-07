@@ -94,6 +94,7 @@ class ScoreService {
     });
   }
 
+  // used by the batter info section.
   Future<void> updateStriker(
       {required Score score, required Player player}) async {
     await _isar.writeTxn(() async {
@@ -336,21 +337,14 @@ class ScoreService {
 
       await _isar.scores.put(newscore); // putting.
 
-      await newscore.playersOnCrease
-          .save(); //  save copied form previous scoreboard
+      newscore = await saveallScoreLinks(newscore: newscore);
+
       await newscore.updateStriker(
           striker: striker, runs: runs, previousOver: score.ballsBowed);
-      await newscore.match.save(); // copied form previous score board.
-      await newscore.ball.save(); //ball save
-      await newscore.batter.save(); // batter save
-      await newscore.socreboard.save(); // object save
-      await newscore.partnership.save();
-      await newscore.partnerShipInfo.save();
-      await newscore.partnershipBatterInfo.save();
     });
   }
 
-  Future<void> bowled({
+  Future<void> wicket({
     required Score score,
     required WicketType wicketType,
   }) async {
@@ -422,6 +416,7 @@ class ScoreService {
 
       await _isar.batters.put(newbatter);
       await _isar.partnershipBatterInfos.put(newPartnershipBatter);
+      await _isar.partnershipInfos.put(partnershipInfo);
 
       ball.match.value = match;
       ball.over = newscore.currentOvers;
@@ -432,29 +427,28 @@ class ScoreService {
       await ball.player.save();
       await ball.match.save();
 
-      // for fall of wickets;
-      final fallOfWickets = FallOfWickets(
-        over: newscore.ballsBowed ~/ 6,
-        ball: newscore.ballsBowed % 6,
-        run: newscore.runs,
+      // // for fall of wickets;
+      // final fallOfWickets = FallOfWickets(
+      //   over: newscore.ballsBowed ~/ 6,
+      //   ball: newscore.ballsBowed % 6,
+      //   run: newscore.runs,
+      // );
+      // fallOfWickets.player.value = striker;
+      // fallOfWickets.match.value = match;
+      // await _isar.fallOfWickets.put(fallOfWickets);
+      // await fallOfWickets.player.save();
+      // await fallOfWickets.match.save();
+      // newscore.fallOfWickets.value = fallOfWickets;
+
+      newscore = await updateFallOfWickets(
+        newscore: newscore,
+        player: striker,
       );
-      fallOfWickets.player.value = striker;
-      fallOfWickets.match.value = match;
-      await _isar.fallOfWickets.put(fallOfWickets);
-      await fallOfWickets.player.save();
-      await fallOfWickets.match.save();
-      newscore.fallOfWickets.value = fallOfWickets;
 
       newscore.ball.value = ball;
       newscore.batter.value = newbatter;
-
       newscore.partnershipBatterInfo.value = newPartnershipBatter;
-
-      // partnership info linking.
-      // this is for bye wide legbyes no ball
-      await _isar.partnershipInfos.put(partnershipInfo);
       newscore.partnerShipInfo.value = partnershipInfo;
-      //partnership is lined in partnership section.
 
       newscore.playersOnCrease.remove(striker);
 
@@ -464,17 +458,152 @@ class ScoreService {
 
       await _isar.scores.put(newscore); // putting.
 
-      await newscore.playersOnCrease
-          .save(); //  save copied form previous scoreboard
-      await newscore.match.save(); // copied form previous score board.
-      await newscore.ball.save(); //ball save
-      await newscore.batter.save(); // batter save
-      await newscore.socreboard.save(); // object save
-      await newscore.partnership.save();
-      await newscore.partnerShipInfo.save();
-      await newscore.partnershipBatterInfo.save();
-      await newscore.fallOfWickets.save();
+      newscore = await saveallScoreLinks(newscore: newscore);
     });
+  }
+
+  Future<void> wicketStumping({
+    required Score score,
+    required bool wide,
+  }) async {
+    final match = score.match.value!;
+    Score newscore = score.copyWith();
+    final striker = score.striker.value!;
+    Batter newbatter;
+    PartnershipBatterInfo newPartnershipBatter;
+    PartnershipInfo partnershipInfo;
+    late Partnership partnership;
+    final ball = Ball();
+
+    // create or add the new partnership and returns the partnership.
+    (newscore, partnership) = await getOrCreatePartnershipInfoHelper(
+        score: score, newscore: newscore, match: match);
+
+    newbatter = await _batterService.getBatter(player: striker, match: match);
+
+    newPartnershipBatter =
+        await _partnershipBatterInfoService.getOrCreateBatter(
+      player: striker,
+      partnership: partnership,
+      match: match,
+    );
+
+    partnershipInfo = await _partnershipInfoService.getOrCreatePartnershipInfo(
+      partnership: partnership,
+      match: match,
+    );
+
+    await _isar.writeTxn(
+      () async {
+        newscore = await getOrCreateScoreboardentryHelper(
+          newscore: newscore,
+          striker: striker,
+          match: match,
+        );
+
+        ball.ballType = BallType.wicket;
+        ball.content = 'stumped';
+
+        if (wide) {
+          newscore.extras++;
+          partnershipInfo.runs++;
+
+          // compute the over for the newscore
+          if (newscore.ballsBowed % 6 == 0) {
+            newscore.currentOvers = newscore.ballsBowed ~/ 6;
+          }
+        } else {
+          newscore.ballsBowed++;
+          newscore.dots++;
+          newscore.wicketsFall++;
+
+          newbatter.balls++;
+          newbatter.dots++;
+
+          newPartnershipBatter.balls++;
+          newPartnershipBatter.dots++;
+
+          partnershipInfo.balls++;
+          partnershipInfo.dots++;
+
+          // compute the over for the newscore
+          if (newscore.ballsBowed % 6 == 0) {
+            newscore.currentOvers == newscore.ballsBowed ~/ 6 - 1;
+          } else {
+            newscore.currentOvers = newscore.ballsBowed ~/ 6;
+          }
+        }
+
+        newbatter.status = BatterStatus.stupmed;
+
+        await _isar.batters.put(newbatter);
+        await _isar.partnershipBatterInfos.put(newPartnershipBatter);
+        await _isar.partnershipInfos.put(partnershipInfo);
+
+        ball.match.value = match;
+        ball.over = newscore.currentOvers;
+        ball.ball = score.ballsBowed % 6 + 1;
+        ball.player.value = striker;
+        ball.name = 'W';
+        await _isar.balls.put(ball);
+        await ball.player.save();
+        await ball.match.save();
+
+        newscore = await updateFallOfWickets(
+          newscore: newscore,
+          player: striker,
+        );
+
+        newscore.ball.value = ball;
+        newscore.batter.value = newbatter;
+        newscore.partnershipBatterInfo.value = newPartnershipBatter;
+        newscore.partnerShipInfo.value = partnershipInfo;
+
+        newscore.playersOnCrease.remove(striker);
+
+        await _isar.scores.put(newscore); // putting.
+
+        //partnership is lined in partnership section.
+
+        await _isar.scores.put(newscore); // putting.
+
+        newscore = await saveallScoreLinks(newscore: newscore);
+      },
+    );
+  }
+
+  Future<Score> saveallScoreLinks({required Score newscore}) async {
+    await newscore.playersOnCrease.save();
+    await newscore.striker.save();
+    await newscore.match.save(); // copied form previous score board.
+    await newscore.ball.save(); //ball save
+    await newscore.batter.save(); // batter save
+    await newscore.socreboard.save(); // object save
+    await newscore.partnershipBatterInfo.save();
+    await newscore.partnerShipInfo.save();
+    await newscore.partnership.save();
+    await newscore.fallOfWickets.save();
+    return newscore;
+  }
+
+  Future<Score> updateFallOfWickets({
+    required Score newscore,
+    required Player player,
+  }) async {
+    // for fall of wickets;
+    final fallOfWickets = FallOfWickets(
+      over: newscore.ballsBowed ~/ 6,
+      ball: newscore.ballsBowed % 6,
+      run: newscore.runs,
+    );
+    fallOfWickets.player.value = player;
+    fallOfWickets.match.value = newscore.match.value;
+    await _isar.fallOfWickets.put(fallOfWickets);
+    await fallOfWickets.player.save();
+    await fallOfWickets.match.save();
+    newscore.fallOfWickets.value = fallOfWickets;
+
+    return newscore;
   }
 
   Future<void> undoScore({required Score score}) async {

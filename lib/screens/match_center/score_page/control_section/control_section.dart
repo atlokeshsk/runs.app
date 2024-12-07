@@ -645,7 +645,7 @@ class OutScreen extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () async {
-                await scoreService.bowled(
+                await scoreService.wicket(
                     score: score, wicketType: WicketType.bowled);
               },
               child: Text(
@@ -654,30 +654,50 @@ class OutScreen extends StatelessWidget {
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await scoreService.wicket(
+                    score: score, wicketType: WicketType.caugth);
+              },
               child: Text(
                 'Caught',
                 style: textStyle,
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await scoreService.wicket(
+                    score: score, wicketType: WicketType.lbw);
+              },
               child: Text(
                 'LBW',
                 style: textStyle,
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await scoreService.wicket(
+                    score: score, wicketType: WicketType.hitwicket);
+              },
               child: Text(
                 'HitWicket',
                 style: textStyle,
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await scoreService.wicketStumping(score: score, wide: false);
+              },
               child: Text(
-                'Stumped',
+                'Stumping',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () async {
+                await scoreService.wicketStumping(score: score, wide: true);
+              },
+              child: Text(
+                'Stumping Wide',
                 style: textStyle,
               ),
             ),
