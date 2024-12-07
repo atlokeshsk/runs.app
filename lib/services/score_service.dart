@@ -507,6 +507,7 @@ class ScoreService {
         if (wide) {
           newscore.extras++;
           partnershipInfo.runs++;
+          ball.name = 'wd W';
 
           // compute the over for the newscore
           if (newscore.ballsBowed % 6 == 0) {
@@ -516,6 +517,8 @@ class ScoreService {
           newscore.ballsBowed++;
           newscore.dots++;
           newscore.wicketsFall++;
+
+          ball.name = 'W';
 
           newbatter.balls++;
           newbatter.dots++;
@@ -544,7 +547,7 @@ class ScoreService {
         ball.over = newscore.currentOvers;
         ball.ball = score.ballsBowed % 6 + 1;
         ball.player.value = striker;
-        ball.name = 'W';
+
         await _isar.balls.put(ball);
         await ball.player.save();
         await ball.match.save();
