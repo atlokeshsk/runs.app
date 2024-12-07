@@ -640,7 +640,7 @@ class OutScreen extends StatelessWidget {
           ),
         ),
         Wrap(
-          spacing: 8.0, // gap between adjacent chips
+          spacing: 8.0,
           runSpacing: 4.0,
           children: [
             OutlinedButton(
@@ -685,16 +685,18 @@ class OutScreen extends StatelessWidget {
                 style: textStyle,
               ),
             ),
-            OutlinedButton(
-              onPressed: () {},
-              child: Text(
-                'Bowled',
-                style: textStyle,
-              ),
-            ),
-          ], // gap between lines
+          ],
         )
       ],
     );
   }
+}
+
+enum WicketType {
+  bowled,
+  lbw,
+  caugth,
+  stumped,
+  hitwicket,
+  runout,
 }

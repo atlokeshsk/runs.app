@@ -97,20 +97,11 @@ class ScoreService {
     });
   }
 
-  Future<void> addRuns({
-    required Runs runs,
-    required Score score,
-    required RunButtonType type,
-  }) async {
-    final match = score.match.value!;
-    final newscore = score.copyWith();
-    final striker = score.striker.value!;
-    Batter? newbatter;
-    PartnershipBatterInfo? newPartnershipBatter;
-    PartnershipInfo partnershipInfo;
-    late Partnership partnership;
-    final ball = Ball();
-
+  Future<(Score, Partnership)> getOrCreatePartnershipInfoHelper(
+      {required Score score,
+      required Score newscore,
+      required Match match}) async {
+    late final Partnership partnership;
     // partnership entry need to be resued that why this approach is different from the scorebaord method.
     await _isar.writeTxn(() async {
       final result = await _partnershipService.entryExists(
@@ -125,6 +116,26 @@ class ScoreService {
         partnership = result;
       }
     });
+    return (newscore, partnership);
+  }
+
+  Future<void> addRuns({
+    required Runs runs,
+    required Score score,
+    required RunButtonType type,
+  }) async {
+    final match = score.match.value!;
+    Score newscore = score.copyWith();
+    final striker = score.striker.value!;
+    Batter? newbatter;
+    PartnershipBatterInfo? newPartnershipBatter;
+    PartnershipInfo partnershipInfo;
+    late Partnership partnership;
+    final ball = Ball();
+
+    // create or add the new partnership and returns the partnership.
+    (newscore, partnership) = await getOrCreatePartnershipInfoHelper(
+        score: score, newscore: newscore, match: match);
 
     // get partnerhsip info
     partnershipInfo = await _partnershipInfoService.getOrCreatePartnershipInfo(
@@ -321,6 +332,20 @@ class ScoreService {
       await newscore.partnerShipInfo.save();
       await newscore.partnershipBatterInfo.save();
     });
+  }
+
+  Future<void> bowled({
+    required Score score,
+    required WicketType wicketType,
+  }) async {
+    final match = score.match.value!;
+    Score newscore = score.copyWith();
+    final striker = score.striker.value!;
+    Batter? newbatter;
+    PartnershipBatterInfo? newPartnershipBatter;
+    PartnershipInfo partnershipInfo;
+    late Partnership partnership;
+    final ball = Ball();
   }
 
   Future<void> undoScore({required Score score}) async {

@@ -80,5 +80,4 @@ enum BatterStatus {
   retiredOut,
   retiredHurt,
   playing,
-  notout,
 }

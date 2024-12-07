@@ -189,7 +189,6 @@ const _BatterstatusEnumValueMap = {
   'retiredOut': 5,
   'retiredHurt': 6,
   'playing': 7,
-  'notout': 8,
 };
 const _BatterstatusValueEnumMap = {
   0: BatterStatus.bowled,
@@ -200,7 +199,6 @@ const _BatterstatusValueEnumMap = {
   5: BatterStatus.retiredOut,
   6: BatterStatus.retiredHurt,
   7: BatterStatus.playing,
-  8: BatterStatus.notout,
 };
 
 Id _batterGetId(Batter object) {
