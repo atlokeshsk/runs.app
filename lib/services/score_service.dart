@@ -119,6 +119,26 @@ class ScoreService {
     return (newscore, partnership);
   }
 
+  Future<Score> getOrCreateScoreboardentryHelper({
+    required Score newscore,
+    required Player striker,
+    required Match match,
+  }) async {
+    // adding the scoreboard entry.
+    final scoreboardEntryExists =
+        await _scoreboardService.entryExists(player: striker, match: match);
+    if (!scoreboardEntryExists) {
+      // add the scoreboard entry for the player.
+      final scoreboard = await _scoreboardService.addPlayer(
+        player: striker,
+        match: match,
+        position: newscore.nextBattingPostion++,
+      );
+      newscore.socreboard.value = scoreboard;
+    }
+    return newscore;
+  }
+
   Future<void> addRuns({
     required Runs runs,
     required Score score,
@@ -153,18 +173,8 @@ class ScoreService {
 
     // add the newscore to db.
     await _isar.writeTxn(() async {
-      // adding the scoreboard entry.
-      final scoreboardEntryExists =
-          await _scoreboardService.entryExists(player: striker, match: match);
-      if (!scoreboardEntryExists) {
-        // add the scoreboard entry for the player.
-        final scoreboard = await _scoreboardService.addPlayer(
-          player: striker,
-          match: match,
-          position: newscore.nextBattingPostion++,
-        );
-        newscore.socreboard.value = scoreboard;
-      } // scoreboard entry compled
+      newscore = await getOrCreateScoreboardentryHelper(
+          newscore: newscore, striker: striker, match: match);
 
       switch (type) {
         case RunButtonType.runs:
@@ -346,6 +356,16 @@ class ScoreService {
     PartnershipInfo partnershipInfo;
     late Partnership partnership;
     final ball = Ball();
+
+    // create or add the new partnership and returns the partnership.
+    (newscore, partnership) = await getOrCreatePartnershipInfoHelper(
+        score: score, newscore: newscore, match: match);
+
+    // get partnerhsip info
+    partnershipInfo = await _partnershipInfoService.getOrCreatePartnershipInfo(
+        partnership: partnership, match: match);
+
+    await _isar.writeTxn(() async {});
   }
 
   Future<void> undoScore({required Score score}) async {
