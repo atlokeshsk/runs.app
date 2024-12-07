@@ -101,6 +101,41 @@ const MatchSchema = CollectionSchema(
       target: r'Batter',
       single: false,
       linkName: r'match',
+    ),
+    r'scoreboards': LinkSchema(
+      id: 1088912074214324457,
+      name: r'scoreboards',
+      target: r'ScoreBoard',
+      single: false,
+      linkName: r'match',
+    ),
+    r'partnerships': LinkSchema(
+      id: 5189483114901653359,
+      name: r'partnerships',
+      target: r'Partnership',
+      single: false,
+      linkName: r'match',
+    ),
+    r'partnershipInfos': LinkSchema(
+      id: -2748935196798231913,
+      name: r'partnershipInfos',
+      target: r'PartnershipInfo',
+      single: false,
+      linkName: r'match',
+    ),
+    r'partnershipBatsmanInfos': LinkSchema(
+      id: -4337467757245754968,
+      name: r'partnershipBatsmanInfos',
+      target: r'PartnershipBatterInfo',
+      single: false,
+      linkName: r'match',
+    ),
+    r'fallOfWickets': LinkSchema(
+      id: 5715790117475533389,
+      name: r'fallOfWickets',
+      target: r'FallOfWickets',
+      single: false,
+      linkName: r'match',
     )
   },
   embeddedSchemas: {},
@@ -156,7 +191,7 @@ Match _matchDeserialize(
     overs: reader.readLong(offsets[6]),
     playersCount: reader.readLong(offsets[7]),
     status: _MatchstatusValueEnumMap[reader.readByteOrNull(offsets[8])] ??
-        Status.inprogress,
+        MatchStatus.inprogress,
     target: reader.readLongOrNull(offsets[9]),
     venue: reader.readString(offsets[10]),
   );
@@ -191,7 +226,7 @@ P _matchDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 8:
       return (_MatchstatusValueEnumMap[reader.readByteOrNull(offset)] ??
-          Status.inprogress) as P;
+          MatchStatus.inprogress) as P;
     case 9:
       return (reader.readLongOrNull(offset)) as P;
     case 10:
@@ -214,8 +249,8 @@ const _MatchstatusEnumValueMap = {
   'completed': 1,
 };
 const _MatchstatusValueEnumMap = {
-  0: Status.inprogress,
-  1: Status.completed,
+  0: MatchStatus.inprogress,
+  1: MatchStatus.completed,
 };
 
 Id _matchGetId(Match object) {
@@ -223,7 +258,16 @@ Id _matchGetId(Match object) {
 }
 
 List<IsarLinkBase<dynamic>> _matchGetLinks(Match object) {
-  return [object.team, object.score, object.batters];
+  return [
+    object.team,
+    object.score,
+    object.batters,
+    object.scoreboards,
+    object.partnerships,
+    object.partnershipInfos,
+    object.partnershipBatsmanInfos,
+    object.fallOfWickets
+  ];
 }
 
 void _matchAttach(IsarCollection<dynamic> col, Id id, Match object) {
@@ -231,6 +275,19 @@ void _matchAttach(IsarCollection<dynamic> col, Id id, Match object) {
   object.team.attach(col, col.isar.collection<Team>(), r'team', id);
   object.score.attach(col, col.isar.collection<Score>(), r'score', id);
   object.batters.attach(col, col.isar.collection<Batter>(), r'batters', id);
+  object.scoreboards
+      .attach(col, col.isar.collection<ScoreBoard>(), r'scoreboards', id);
+  object.partnerships
+      .attach(col, col.isar.collection<Partnership>(), r'partnerships', id);
+  object.partnershipInfos.attach(
+      col, col.isar.collection<PartnershipInfo>(), r'partnershipInfos', id);
+  object.partnershipBatsmanInfos.attach(
+      col,
+      col.isar.collection<PartnershipBatterInfo>(),
+      r'partnershipBatsmanInfos',
+      id);
+  object.fallOfWickets
+      .attach(col, col.isar.collection<FallOfWickets>(), r'fallOfWickets', id);
 }
 
 extension MatchQueryWhereSort on QueryBuilder<Match, Match, QWhere> {
@@ -733,7 +790,7 @@ extension MatchQueryFilter on QueryBuilder<Match, Match, QFilterCondition> {
   }
 
   QueryBuilder<Match, Match, QAfterFilterCondition> statusEqualTo(
-      Status value) {
+      MatchStatus value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'status',
@@ -743,7 +800,7 @@ extension MatchQueryFilter on QueryBuilder<Match, Match, QFilterCondition> {
   }
 
   QueryBuilder<Match, Match, QAfterFilterCondition> statusGreaterThan(
-    Status value, {
+    MatchStatus value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -756,7 +813,7 @@ extension MatchQueryFilter on QueryBuilder<Match, Match, QFilterCondition> {
   }
 
   QueryBuilder<Match, Match, QAfterFilterCondition> statusLessThan(
-    Status value, {
+    MatchStatus value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -769,8 +826,8 @@ extension MatchQueryFilter on QueryBuilder<Match, Match, QFilterCondition> {
   }
 
   QueryBuilder<Match, Match, QAfterFilterCondition> statusBetween(
-    Status lower,
-    Status upper, {
+    MatchStatus lower,
+    MatchStatus upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1106,6 +1163,303 @@ extension MatchQueryLinks on QueryBuilder<Match, Match, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
           r'batters', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> scoreboards(
+      FilterQuery<ScoreBoard> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'scoreboards');
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> scoreboardsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'scoreboards', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> scoreboardsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'scoreboards', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> scoreboardsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'scoreboards', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> scoreboardsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'scoreboards', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      scoreboardsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'scoreboards', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> scoreboardsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'scoreboards', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnerships(
+      FilterQuery<Partnership> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnerships');
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnerships', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnerships', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnerships', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnerships', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnerships', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnerships', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipInfos(
+      FilterQuery<PartnershipInfo> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnershipInfos');
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipInfosLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipInfosIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipInfosIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipInfosLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipInfosLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipInfos', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipInfosLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipInfos', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> partnershipBatsmanInfos(
+      FilterQuery<PartnershipBatterInfo> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnershipBatsmanInfos');
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipBatsmanInfosLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatsmanInfos', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipBatsmanInfosIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipBatsmanInfos', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipBatsmanInfosIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatsmanInfos', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipBatsmanInfosLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatsmanInfos', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipBatsmanInfosLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatsmanInfos', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      partnershipBatsmanInfosLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatsmanInfos', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> fallOfWickets(
+      FilterQuery<FallOfWickets> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'fallOfWickets');
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> fallOfWicketsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'fallOfWickets', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> fallOfWicketsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'fallOfWickets', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> fallOfWicketsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'fallOfWickets', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> fallOfWicketsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'fallOfWickets', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition>
+      fallOfWicketsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'fallOfWickets', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Match, Match, QAfterFilterCondition> fallOfWicketsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'fallOfWickets', lower, includeLower, upper, includeUpper);
     });
   }
 }
@@ -1515,7 +1869,7 @@ extension MatchQueryProperty on QueryBuilder<Match, Match, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Match, Status, QQueryOperations> statusProperty() {
+  QueryBuilder<Match, MatchStatus, QQueryOperations> statusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'status');
     });

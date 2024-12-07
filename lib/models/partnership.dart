@@ -14,4 +14,10 @@ class Partnership {
   final playersInPartnership = IsarLinks<Player>();
 
   final match = IsarLink<Match>();
+
+  @Backlink(to: 'partnership')
+  final partnershipInfos = IsarLinks<PartnershipInfo>();
+
+  @Backlink(to: 'partnership')
+  final partnershipBatterInfo = IsarLinks<PartnershipBatterInfo>();
 }

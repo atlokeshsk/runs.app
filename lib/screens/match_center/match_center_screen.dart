@@ -30,7 +30,7 @@ class MatchCenterScreen extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             ScorePage(matchId: matchId),
-            ScoreCardPage(),
+            ScoreCardPage(matchId: matchId),
             BallsPage(),
           ],
         ),

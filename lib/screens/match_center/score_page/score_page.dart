@@ -32,7 +32,7 @@ class ScorePage extends StatelessWidget {
               case ConnectionState.none:
                 return SizedBox.shrink();
               case ConnectionState.waiting:
-                return const Center(child: CircularProgressIndicator());
+                return SizedBox.shrink();
               case ConnectionState.active:
 
                 // Use addPostFrameCallback to reset ControlSectionState

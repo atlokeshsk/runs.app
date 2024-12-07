@@ -69,6 +69,36 @@ class Batter {
       ..player.value = player.value
       ..match.value = match.value;
   }
+
+  String getStrikRate() {
+    return ((runs / balls) * 100).toStringAsFixed(0);
+  }
+
+  String statusToString() {
+    switch (status) {
+      case BatterStatus.bowled:
+        return 'Bowled';
+      case BatterStatus.caugth:
+        return 'Caught';
+      case BatterStatus.lbw:
+        return 'lbw';
+      case BatterStatus.htiwicket:
+        return 'Hitwicet';
+      case BatterStatus.stupmed:
+        return 'Stumped';
+      case BatterStatus.runout:
+        return 'Run out';
+      case BatterStatus.retiredOut:
+        return 'Retired out';
+      case BatterStatus.retiredHurt:
+        return 'Retired Hurt';
+      case BatterStatus.playing:
+        if (match.value!.status == MatchStatus.completed) {
+          return 'Not Out';
+        }
+        return 'Batting';
+    }
+  }
 }
 
 enum BatterStatus {

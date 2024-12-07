@@ -12,7 +12,7 @@ class Match {
     required this.overs,
     required this.playersCount,
     required this.lastManStanding,
-    this.status = Status.inprogress,
+    this.status = MatchStatus.inprogress,
     this.countRunsForWide = true,
     this.countRunsForNoBall = true,
     this.target,
@@ -72,7 +72,7 @@ class Match {
   bool lastManStanding;
 
   @enumerated
-  Status status;
+  MatchStatus status;
 
   DateTime dateTime;
 
@@ -83,6 +83,21 @@ class Match {
 
   @Backlink(to: 'match')
   final batters = IsarLinks<Batter>();
+
+  @Backlink(to: 'match')
+  final scoreboards = IsarLinks<ScoreBoard>();
+
+  @Backlink(to: 'match')
+  final partnerships = IsarLinks<Partnership>();
+
+  @Backlink(to: 'match')
+  final partnershipInfos = IsarLinks<PartnershipInfo>();
+
+  @Backlink(to: 'match')
+  final partnershipBatsmanInfos = IsarLinks<PartnershipBatterInfo>();
+
+  @Backlink(to: 'match')
+  final fallOfWickets = IsarLinks<FallOfWickets>();
 }
 
 enum Innings {
@@ -90,7 +105,7 @@ enum Innings {
   second,
 }
 
-enum Status {
+enum MatchStatus {
   inprogress,
   completed,
 }

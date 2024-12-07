@@ -45,6 +45,7 @@ class BattersInfo extends StatelessWidget {
               Expanded(child: Center(child: Text('0s', style: headerStyle))),
               Expanded(child: Center(child: Text('4s', style: headerStyle))),
               Expanded(child: Center(child: Text('6s', style: headerStyle))),
+              Expanded(child: Center(child: Text('SR', style: headerStyle))),
             ],
           ),
           SizedBox(height: 10 * scale),
@@ -78,6 +79,7 @@ class BatterEmptyRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(flex: 3, child: Text('-', style: headerStyle)),
+        Expanded(child: Center(child: Text('-', style: headerStyle))),
         Expanded(child: Center(child: Text('-', style: headerStyle))),
         Expanded(child: Center(child: Text('-', style: headerStyle))),
         Expanded(child: Center(child: Text('-', style: headerStyle))),
@@ -172,6 +174,15 @@ class BatterRow extends StatelessWidget {
                     child: Text(
                       batter?.sixes.toString() ?? '0',
                       style: textStyle,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      batter?.getStrikRate() ?? '0',
+                      style: textStyle,
+                      maxLines: 1,
                     ),
                   ),
                 ),

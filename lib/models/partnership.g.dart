@@ -41,6 +41,20 @@ const PartnershipSchema = CollectionSchema(
       name: r'match',
       target: r'Match',
       single: true,
+    ),
+    r'partnershipInfos': LinkSchema(
+      id: 8272728459996641413,
+      name: r'partnershipInfos',
+      target: r'PartnershipInfo',
+      single: false,
+      linkName: r'partnership',
+    ),
+    r'partnershipBatterInfo': LinkSchema(
+      id: -6677248545683896240,
+      name: r'partnershipBatterInfo',
+      target: r'PartnershipBatterInfo',
+      single: false,
+      linkName: r'partnership',
     )
   },
   embeddedSchemas: {},
@@ -100,7 +114,12 @@ Id _partnershipGetId(Partnership object) {
 }
 
 List<IsarLinkBase<dynamic>> _partnershipGetLinks(Partnership object) {
-  return [object.playersInPartnership, object.match];
+  return [
+    object.playersInPartnership,
+    object.match,
+    object.partnershipInfos,
+    object.partnershipBatterInfo
+  ];
 }
 
 void _partnershipAttach(
@@ -109,6 +128,13 @@ void _partnershipAttach(
   object.playersInPartnership
       .attach(col, col.isar.collection<Player>(), r'playersInPartnership', id);
   object.match.attach(col, col.isar.collection<Match>(), r'match', id);
+  object.partnershipInfos.attach(
+      col, col.isar.collection<PartnershipInfo>(), r'partnershipInfos', id);
+  object.partnershipBatterInfo.attach(
+      col,
+      col.isar.collection<PartnershipBatterInfo>(),
+      r'partnershipBatterInfo',
+      id);
 }
 
 extension PartnershipQueryWhereSort
@@ -380,6 +406,132 @@ extension PartnershipQueryLinks
   QueryBuilder<Partnership, Partnership, QAfterFilterCondition> matchIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'match', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipInfos(FilterQuery<PartnershipInfo> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnershipInfos');
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipInfosLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipInfosIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipInfosIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipInfosLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipInfos', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipInfosLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipInfos', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipInfosLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipInfos', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipBatterInfo(FilterQuery<PartnershipBatterInfo> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'partnershipBatterInfo');
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipBatterInfoLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatterInfo', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipBatterInfoIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipBatterInfo', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipBatterInfoIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'partnershipBatterInfo', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipBatterInfoLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatterInfo', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipBatterInfoLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatterInfo', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Partnership, Partnership, QAfterFilterCondition>
+      partnershipBatterInfoLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'partnershipBatterInfo', lower, includeLower, upper, includeUpper);
     });
   }
 }

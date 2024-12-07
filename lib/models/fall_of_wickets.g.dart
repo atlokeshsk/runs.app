@@ -22,13 +22,18 @@ const FallOfWicketsSchema = CollectionSchema(
       name: r'ball',
       type: IsarType.long,
     ),
-    r'over': PropertySchema(
+    r'datetime': PropertySchema(
       id: 1,
+      name: r'datetime',
+      type: IsarType.dateTime,
+    ),
+    r'over': PropertySchema(
+      id: 2,
       name: r'over',
       type: IsarType.long,
     ),
     r'run': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'run',
       type: IsarType.long,
     )
@@ -76,8 +81,9 @@ void _fallOfWicketsSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.ball);
-  writer.writeLong(offsets[1], object.over);
-  writer.writeLong(offsets[2], object.run);
+  writer.writeDateTime(offsets[1], object.datetime);
+  writer.writeLong(offsets[2], object.over);
+  writer.writeLong(offsets[3], object.run);
 }
 
 FallOfWickets _fallOfWicketsDeserialize(
@@ -88,8 +94,8 @@ FallOfWickets _fallOfWicketsDeserialize(
 ) {
   final object = FallOfWickets(
     ball: reader.readLong(offsets[0]),
-    over: reader.readLong(offsets[1]),
-    run: reader.readLong(offsets[2]),
+    over: reader.readLong(offsets[2]),
+    run: reader.readLong(offsets[3]),
   );
   object.id = id;
   return object;
@@ -105,8 +111,10 @@ P _fallOfWicketsDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 2:
+      return (reader.readLong(offset)) as P;
+    case 3:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -258,6 +266,62 @@ extension FallOfWicketsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'ball',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterFilterCondition>
+      datetimeEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterFilterCondition>
+      datetimeGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterFilterCondition>
+      datetimeLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'datetime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterFilterCondition>
+      datetimeBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'datetime',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -478,6 +542,19 @@ extension FallOfWicketsQuerySortBy
     });
   }
 
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterSortBy> sortByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterSortBy>
+      sortByDatetimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.desc);
+    });
+  }
+
   QueryBuilder<FallOfWickets, FallOfWickets, QAfterSortBy> sortByOver() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'over', Sort.asc);
@@ -514,6 +591,19 @@ extension FallOfWicketsQuerySortThenBy
   QueryBuilder<FallOfWickets, FallOfWickets, QAfterSortBy> thenByBallDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ball', Sort.desc);
+    });
+  }
+
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterSortBy> thenByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<FallOfWickets, FallOfWickets, QAfterSortBy>
+      thenByDatetimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'datetime', Sort.desc);
     });
   }
 
@@ -562,6 +652,12 @@ extension FallOfWicketsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<FallOfWickets, FallOfWickets, QDistinct> distinctByDatetime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'datetime');
+    });
+  }
+
   QueryBuilder<FallOfWickets, FallOfWickets, QDistinct> distinctByOver() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'over');
@@ -586,6 +682,12 @@ extension FallOfWicketsQueryProperty
   QueryBuilder<FallOfWickets, int, QQueryOperations> ballProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'ball');
+    });
+  }
+
+  QueryBuilder<FallOfWickets, DateTime, QQueryOperations> datetimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'datetime');
     });
   }
 
