@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:runs/models/fall_of_wickets.dart';
 import 'package:runs/screens/match_center/score_page/control_section/control_section.dart';
 import './models.dart';
 
@@ -73,6 +74,7 @@ class Score {
   final partnershipBatterInfo = IsarLink<PartnershipBatterInfo>();
   final partnerShipInfo = IsarLink<PartnershipInfo>();
   final partnership = IsarLink<Partnership>();
+  final fallOfWickets = IsarLink<FallOfWickets>();
 
   void addRuns({required Runs runs}) {
     switch (runs) {

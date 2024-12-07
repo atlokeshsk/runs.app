@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:runs/models/fall_of_wickets.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/screens/match_center/score_page/control_section/control_section.dart';
 import 'package:runs/services/services.dart';
@@ -14,6 +15,7 @@ class ScoreService {
   late final PartnershipService _partnershipService;
   late final PartnershipBatterInfoService _partnershipBatterInfoService;
   late final PartnershipInfoService _partnershipInfoService;
+  late final FallOfWicketsService _fallOfWicketsService;
 
   set scoreboardService(ScoreboardService scoreboardService) {
     _scoreboardService = scoreboardService;
@@ -37,6 +39,10 @@ class ScoreService {
 
   set partnershipInfoService(PartnershipInfoService service) {
     _partnershipInfoService = service;
+  }
+
+  set fallOfWicketsService(FallOfWicketsService service) {
+    _fallOfWicketsService = service;
   }
 
   // Create the new score for the match and add the match  to the score.
@@ -426,6 +432,19 @@ class ScoreService {
       await ball.player.save();
       await ball.match.save();
 
+      // for fall of wickets;
+      final fallOfWickets = FallOfWickets(
+        over: newscore.currentOvers,
+        ball: score.ballsBowed % 6 + 1,
+        run: newscore.runs,
+      );
+      fallOfWickets.player.value = striker;
+      fallOfWickets.match.value = match;
+      await _isar.fallOfWickets.put(fallOfWickets);
+      await fallOfWickets.player.save();
+      await fallOfWickets.match.save();
+      newscore.fallOfWickets.value = fallOfWickets;
+
       newscore.ball.value = ball;
       newscore.batter.value = newbatter;
 
@@ -454,6 +473,7 @@ class ScoreService {
       await newscore.partnership.save();
       await newscore.partnerShipInfo.save();
       await newscore.partnershipBatterInfo.save();
+      await newscore.fallOfWickets.save();
     });
   }
 
@@ -464,6 +484,7 @@ class ScoreService {
     final partnershipBatterInfo = score.partnershipBatterInfo.value;
     final partnershipInfo = score.partnerShipInfo.value;
     final partnership = score.partnership.value;
+    final fallOfWickets = score.fallOfWickets.value;
 
     if (ball != null) {
       await _ballService.deleteBall(ball.id);
@@ -486,6 +507,10 @@ class ScoreService {
 
     if (partnership != null) {
       await _partnershipService.deletePartnership(partnership.id);
+    }
+
+    if (fallOfWickets != null) {
+      await _fallOfWicketsService.deleteFallOfWickets(fallOfWickets.id);
     }
 
     await _isar.writeTxn(() async {

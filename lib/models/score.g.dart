@@ -158,6 +158,12 @@ const ScoreSchema = CollectionSchema(
       name: r'partnership',
       target: r'Partnership',
       single: true,
+    ),
+    r'fallOfWickets': LinkSchema(
+      id: -6668071338690664087,
+      name: r'fallOfWickets',
+      target: r'FallOfWickets',
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -286,7 +292,8 @@ List<IsarLinkBase<dynamic>> _scoreGetLinks(Score object) {
     object.socreboard,
     object.partnershipBatterInfo,
     object.partnerShipInfo,
-    object.partnership
+    object.partnership,
+    object.fallOfWickets
   ];
 }
 
@@ -309,6 +316,8 @@ void _scoreAttach(IsarCollection<dynamic> col, Id id, Score object) {
       col, col.isar.collection<PartnershipInfo>(), r'partnerShipInfo', id);
   object.partnership
       .attach(col, col.isar.collection<Partnership>(), r'partnership', id);
+  object.fallOfWickets
+      .attach(col, col.isar.collection<FallOfWickets>(), r'fallOfWickets', id);
 }
 
 extension ScoreQueryWhereSort on QueryBuilder<Score, Score, QWhere> {
@@ -1446,6 +1455,19 @@ extension ScoreQueryLinks on QueryBuilder<Score, Score, QFilterCondition> {
   QueryBuilder<Score, Score, QAfterFilterCondition> partnershipIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'partnership', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> fallOfWickets(
+      FilterQuery<FallOfWickets> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'fallOfWickets');
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> fallOfWicketsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'fallOfWickets', 0, true, 0, true);
     });
   }
 }

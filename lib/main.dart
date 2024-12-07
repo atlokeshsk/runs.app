@@ -18,6 +18,7 @@ void main() async {
   final partnershInfoService = PartnershipInfoService(isarService.isar);
   final partnershipBatterInfoService =
       PartnershipBatterInfoService(isarService.isar);
+  final fallOfWicketsService = FallOfWicketsService(isarService.isar);
 
   // MatchService
   matchService.scoreService = scoreService;
@@ -29,6 +30,7 @@ void main() async {
   scoreService.partnershipService = partnershipService;
   scoreService.partnershipBatterInfoService = partnershipBatterInfoService;
   scoreService.partnershipInfoService = partnershInfoService;
+  scoreService.fallOfWicketsService = fallOfWicketsService;
 
   runApp(
     MultiProvider(
@@ -46,7 +48,8 @@ void main() async {
         Provider<PartnershipService>.value(value: partnershipService),
         Provider<PartnershipInfoService>.value(value: partnershInfoService),
         Provider<PartnershipBatterInfoService>.value(
-            value: partnershipBatterInfoService)
+            value: partnershipBatterInfoService),
+        Provider.value(value: fallOfWicketsService),
       ],
       child: RunsApp(),
     ),

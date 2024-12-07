@@ -9,3 +9,4 @@ export 'player_service.dart';
 export 'score_service.dart';
 export 'team_service.dart';
 export 'scoreboard_service.dart';
+export 'fall_of_wickets_service.dart';
