@@ -434,8 +434,8 @@ class ScoreService {
 
       // for fall of wickets;
       final fallOfWickets = FallOfWickets(
-        over: newscore.currentOvers,
-        ball: score.ballsBowed % 6 + 1,
+        over: newscore.ballsBowed ~/ 6,
+        ball: newscore.ballsBowed % 6,
         run: newscore.runs,
       );
       fallOfWickets.player.value = striker;

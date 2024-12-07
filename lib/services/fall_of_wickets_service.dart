@@ -1,6 +1,5 @@
 import 'package:isar/isar.dart';
 import 'package:runs/models/models.dart';
-import 'package:runs/models/score.dart';
 
 class FallOfWicketsService {
   FallOfWicketsService(Isar isar) : _isar = isar;
