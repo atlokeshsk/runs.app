@@ -133,13 +133,13 @@ const ScoreSchema = CollectionSchema(
       id: -5053710747220821746,
       name: r'batter',
       target: r'Batter',
-      single: true,
+      single: false,
     ),
     r'socreboard': LinkSchema(
       id: 4423202444091048867,
       name: r'socreboard',
       target: r'ScoreBoard',
-      single: true,
+      single: false,
     ),
     r'partnershipBatterInfo': LinkSchema(
       id: 7664914619158758929,
@@ -1399,9 +1399,52 @@ extension ScoreQueryLinks on QueryBuilder<Score, Score, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Score, Score, QAfterFilterCondition> batterIsNull() {
+  QueryBuilder<Score, Score, QAfterFilterCondition> batterLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'batter', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> batterIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'batter', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> batterIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'batter', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> batterLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'batter', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> batterLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'batter', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> batterLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'batter', lower, includeLower, upper, includeUpper);
     });
   }
 
@@ -1412,9 +1455,52 @@ extension ScoreQueryLinks on QueryBuilder<Score, Score, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardIsNull() {
+  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'socreboard', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'socreboard', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'socreboard', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'socreboard', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'socreboard', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Score, Score, QAfterFilterCondition> socreboardLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'socreboard', lower, includeLower, upper, includeUpper);
     });
   }
 

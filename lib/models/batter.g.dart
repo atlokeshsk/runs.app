@@ -83,6 +83,13 @@ const BatterSchema = CollectionSchema(
       single: true,
       linkName: r'batters',
     ),
+    r'score': LinkSchema(
+      id: -9031318472397583026,
+      name: r'score',
+      target: r'Score',
+      single: true,
+      linkName: r'batter',
+    ),
     r'match': LinkSchema(
       id: 6555530344206152273,
       name: r'match',
@@ -208,12 +215,13 @@ Id _batterGetId(Batter object) {
 }
 
 List<IsarLinkBase<dynamic>> _batterGetLinks(Batter object) {
-  return [object.player, object.match];
+  return [object.player, object.score, object.match];
 }
 
 void _batterAttach(IsarCollection<dynamic> col, Id id, Batter object) {
   object.id = id;
   object.player.attach(col, col.isar.collection<Player>(), r'player', id);
+  object.score.attach(col, col.isar.collection<Score>(), r'score', id);
   object.match.attach(col, col.isar.collection<Match>(), r'match', id);
 }
 
@@ -881,6 +889,19 @@ extension BatterQueryLinks on QueryBuilder<Batter, Batter, QFilterCondition> {
   QueryBuilder<Batter, Batter, QAfterFilterCondition> playerIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'player', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Batter, Batter, QAfterFilterCondition> score(
+      FilterQuery<Score> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'score');
+    });
+  }
+
+  QueryBuilder<Batter, Batter, QAfterFilterCondition> scoreIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'score', 0, true, 0, true);
     });
   }
 

@@ -69,8 +69,8 @@ class Score {
 
   //  for undo operations
   final ball = IsarLink<Ball>();
-  final batter = IsarLink<Batter>();
-  final socreboard = IsarLink<ScoreBoard>();
+  final batter = IsarLinks<Batter>();
+  final socreboard = IsarLinks<ScoreBoard>();
   final partnershipBatterInfo = IsarLink<PartnershipBatterInfo>();
   final partnerShipInfo = IsarLink<PartnershipInfo>();
   final partnership = IsarLink<Partnership>();

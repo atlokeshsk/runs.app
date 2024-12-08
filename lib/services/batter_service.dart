@@ -34,7 +34,7 @@ class BatterService {
 
   // get the batter if no batter exists.
   // create the new batter and return that batter.
-  Future<Batter> getBatter({
+  Future<Batter> getOrCreateBatter({
     required Player player,
     required Match match,
   }) async {
@@ -68,5 +68,13 @@ class BatterService {
     await _isar.writeTxn(() async {
       await _isar.batters.delete(id);
     });
+  }
+
+  Future<void> deleteBatters(List<int> ids) async {
+    await _isar.writeTxn(
+      () async {
+        await _isar.batters.deleteAll(ids);
+      },
+    );
   }
 }

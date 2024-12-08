@@ -128,20 +128,20 @@ class ScoreService {
 
   Future<Score> getOrCreateScoreboardentryHelper({
     required Score newscore,
-    required Player striker,
+    required Player player,
     required Match match,
   }) async {
     // adding the scoreboard entry.
     final scoreboardEntryExists =
-        await _scoreboardService.entryExists(player: striker, match: match);
+        await _scoreboardService.entryExists(player: player, match: match);
     if (!scoreboardEntryExists) {
       // add the scoreboard entry for the player.
       final scoreboard = await _scoreboardService.addPlayer(
-        player: striker,
+        player: player,
         match: match,
         position: newscore.nextBattingPostion++,
       );
-      newscore.socreboard.value = scoreboard;
+      newscore.socreboard.add(scoreboard);
     }
     return newscore;
   }
@@ -170,7 +170,8 @@ class ScoreService {
 
     // create or get the batter
     if (type != RunButtonType.wide) {
-      newbatter = await _batterService.getBatter(player: striker, match: match);
+      newbatter =
+          await _batterService.getOrCreateBatter(player: striker, match: match);
 
       //gets the partnership batter;
       newPartnershipBatter =
@@ -181,7 +182,7 @@ class ScoreService {
     // add the newscore to db.
     await _isar.writeTxn(() async {
       newscore = await getOrCreateScoreboardentryHelper(
-          newscore: newscore, striker: striker, match: match);
+          newscore: newscore, player: striker, match: match);
 
       switch (type) {
         case RunButtonType.runs:
@@ -323,7 +324,9 @@ class ScoreService {
 
       // object linking
       newscore.ball.value = ball; // ball
-      newscore.batter.value = newbatter; // batter
+      if (newbatter != null) {
+        newscore.batter.add(newbatter);
+      } // batter
       //scoreboard is initialized in scoreboard entry,
       newscore.partnershipBatterInfo.value = newPartnershipBatter;
 
@@ -361,7 +364,8 @@ class ScoreService {
     (newscore, partnership) = await getOrCreatePartnershipInfoHelper(
         score: score, newscore: newscore, match: match);
 
-    newbatter = await _batterService.getBatter(player: striker, match: match);
+    newbatter =
+        await _batterService.getOrCreateBatter(player: striker, match: match);
 
     newPartnershipBatter =
         await _partnershipBatterInfoService.getOrCreateBatter(
@@ -372,7 +376,10 @@ class ScoreService {
 
     await _isar.writeTxn(() async {
       newscore = await getOrCreateScoreboardentryHelper(
-          newscore: newscore, striker: striker, match: match);
+        newscore: newscore,
+        player: striker,
+        match: match,
+      );
       newscore.ballsBowed++;
       newscore.wicketsFall++;
       newscore.dots++;
@@ -427,26 +434,13 @@ class ScoreService {
       await ball.player.save();
       await ball.match.save();
 
-      // // for fall of wickets;
-      // final fallOfWickets = FallOfWickets(
-      //   over: newscore.ballsBowed ~/ 6,
-      //   ball: newscore.ballsBowed % 6,
-      //   run: newscore.runs,
-      // );
-      // fallOfWickets.player.value = striker;
-      // fallOfWickets.match.value = match;
-      // await _isar.fallOfWickets.put(fallOfWickets);
-      // await fallOfWickets.player.save();
-      // await fallOfWickets.match.save();
-      // newscore.fallOfWickets.value = fallOfWickets;
-
       newscore = await updateFallOfWickets(
         newscore: newscore,
         player: striker,
       );
 
       newscore.ball.value = ball;
-      newscore.batter.value = newbatter;
+      newscore.batter.add(newbatter);
       newscore.partnershipBatterInfo.value = newPartnershipBatter;
       newscore.partnerShipInfo.value = partnershipInfo;
 
@@ -479,7 +473,8 @@ class ScoreService {
     (newscore, partnership) = await getOrCreatePartnershipInfoHelper(
         score: score, newscore: newscore, match: match);
 
-    newbatter = await _batterService.getBatter(player: striker, match: match);
+    newbatter =
+        await _batterService.getOrCreateBatter(player: striker, match: match);
 
     newPartnershipBatter =
         await _partnershipBatterInfoService.getOrCreateBatter(
@@ -497,7 +492,7 @@ class ScoreService {
       () async {
         newscore = await getOrCreateScoreboardentryHelper(
           newscore: newscore,
-          striker: striker,
+          player: striker,
           match: match,
         );
 
@@ -558,7 +553,7 @@ class ScoreService {
         );
 
         newscore.ball.value = ball;
-        newscore.batter.value = newbatter;
+        newscore.batter.add(newbatter);
         newscore.partnershipBatterInfo.value = newPartnershipBatter;
         newscore.partnerShipInfo.value = partnershipInfo;
 
@@ -609,10 +604,234 @@ class ScoreService {
     return newscore;
   }
 
+  Future<void> runOut({
+    required Score score,
+    required Player runoutPlayer,
+    required RunButtonType type,
+    required Runs runs,
+  }) async {
+    final match = score.match.value!;
+    Score newscore = score.copyWith();
+    final striker = score.striker.value!;
+    Batter newbatter;
+    Batter? runoubatter;
+    PartnershipBatterInfo? newPartnershipBatter;
+    PartnershipInfo partnershipInfo;
+    late Partnership partnership;
+    final ball = Ball();
+
+    // create or add the new partnership and returns the partnership.
+    (newscore, partnership) = await getOrCreatePartnershipInfoHelper(
+        score: score, newscore: newscore, match: match);
+
+    // get partnerhsip info
+    partnershipInfo = await _partnershipInfoService.getOrCreatePartnershipInfo(
+        partnership: partnership, match: match);
+
+    if (striker.id == runoutPlayer.id) {
+      newbatter = await _batterService.getOrCreateBatter(
+        player: striker,
+        match: match,
+      )
+        ..status = BatterStatus.runout;
+    } else {
+      newbatter =
+          await _batterService.getOrCreateBatter(player: striker, match: match);
+      runoubatter = await _batterService.getOrCreateBatter(
+        player: runoutPlayer,
+        match: match,
+      )
+        ..status = BatterStatus.runout;
+    }
+
+    // create or get the batter
+    if (type != RunButtonType.wide) {
+      //gets the partnership batter;
+      newPartnershipBatter =
+          await _partnershipBatterInfoService.getOrCreateBatter(
+              player: striker, partnership: partnership, match: match);
+    }
+
+    await _isar.writeTxn(
+      () async {
+        newscore = await getOrCreateScoreboardentryHelper(
+          newscore: newscore,
+          player: striker,
+          match: match,
+        );
+
+        if (runoubatter != null) {
+          newscore = await getOrCreateScoreboardentryHelper(
+            newscore: newscore,
+            player: runoutPlayer,
+            match: match,
+          );
+        }
+
+        switch (type) {
+          case RunButtonType.runs:
+            newscore.ballsBowed++;
+
+            newbatter.addRuns(runs: runs);
+            newbatter.balls++;
+
+            newPartnershipBatter!.addRuns(runs: runs);
+            newPartnershipBatter.balls++;
+
+            partnershipInfo.balls++;
+
+          case RunButtonType.wide:
+            newscore.extras++;
+            newscore.wide++;
+            newscore.runs++;
+
+            partnershipInfo.runs++;
+
+          case RunButtonType.byes:
+            newscore.ballsBowed++;
+            newscore.extras++;
+
+            newbatter.balls++;
+            newbatter.dots++;
+
+            newPartnershipBatter!.balls++;
+            newPartnershipBatter.dots++;
+
+            partnershipInfo.balls++;
+
+          case RunButtonType.legbyes:
+            newscore.ballsBowed++;
+            newscore.extras++;
+
+            newbatter.balls++;
+            newbatter.dots++;
+
+            newPartnershipBatter!.balls++;
+            newPartnershipBatter.dots++;
+
+            partnershipInfo.balls++;
+
+          case RunButtonType.noball:
+            newscore.extras++;
+            newscore.noball++;
+            newscore.runs++;
+
+            newbatter.addRuns(runs: runs);
+            newbatter.balls++;
+
+            newPartnershipBatter!.addRuns(runs: runs);
+            newPartnershipBatter.balls++;
+
+            partnershipInfo.runs++;
+            partnershipInfo.balls++;
+
+          case RunButtonType.noballByes:
+            newscore.extras++;
+            newscore.noball++;
+            newscore.runs++;
+
+            newbatter.balls++;
+            newbatter.dots++;
+
+            newPartnershipBatter!.balls++;
+            newPartnershipBatter.dots++;
+
+            partnershipInfo.runs++;
+            partnershipInfo.balls++;
+
+          case RunButtonType.noballLegByes:
+            newscore.extras++;
+            newscore.noball++;
+            newscore.runs++;
+
+            newbatter.balls++;
+            newbatter.dots++;
+
+            newPartnershipBatter!.balls++;
+            newPartnershipBatter.dots++;
+
+            partnershipInfo.runs++;
+            partnershipInfo.balls++;
+        }
+
+        await _isar.batters.put(newbatter);
+        newscore.batter.add(newbatter);
+        if (runoubatter != null) {
+          await _isar.batters.put(runoubatter);
+          newscore.batter.add(runoubatter);
+        }
+
+        if (newPartnershipBatter != null) {
+          await _isar.partnershipBatterInfos.put(newPartnershipBatter);
+        }
+
+        switch (type) {
+          case RunButtonType.runs:
+          case RunButtonType.byes:
+          case RunButtonType.legbyes:
+            // compute the over for the newscore
+            if (newscore.ballsBowed % 6 == 0) {
+              newscore.currentOvers == newscore.ballsBowed ~/ 6 - 1;
+            } else {
+              newscore.currentOvers = newscore.ballsBowed ~/ 6;
+            }
+          case RunButtonType.wide:
+          case RunButtonType.noball:
+          case RunButtonType.noballByes:
+          case RunButtonType.noballLegByes:
+            // compute the over for the newscore
+            if (newscore.ballsBowed % 6 == 0) {
+              newscore.currentOvers = newscore.ballsBowed ~/ 6;
+            }
+        }
+
+        ball.match.value = match;
+        ball.over = newscore.currentOvers;
+        ball.ball = score.ballsBowed % 6 + 1;
+        ball.addNameandContent(runs: runs, type: type);
+        ball.ballType = BallType.wicket;
+        ball.name += 'W';
+        ball.content += 'Run Out';
+        ball.player.value = striker;
+        await _isar.balls.put(ball);
+        await ball.player.save();
+        await ball.match.save();
+
+        // this is for bye wide legbyes no ball
+        newscore.addRuns(runs: runs);
+
+        // object linking
+        newscore.ball.value = ball; // ball
+
+        //scoreboard is initialized in scoreboard entry,
+        newscore.partnershipBatterInfo.value = newPartnershipBatter;
+
+        // partnership info linking.
+        // this is for bye wide legbyes no ball
+        partnershipInfo.addRuns(runs: runs);
+        await _isar.partnershipInfos.put(partnershipInfo);
+        newscore.partnerShipInfo.value = partnershipInfo;
+
+        //partnership is lined in partnership section.
+
+        newscore = await updateFallOfWickets(
+          newscore: newscore,
+          player: runoutPlayer,
+        );
+
+        newscore.playersOnCrease.remove(runoutPlayer);
+
+        await _isar.scores.put(newscore); // putting.
+
+        newscore = await saveallScoreLinks(newscore: newscore);
+      },
+    );
+  }
+
   Future<void> undoScore({required Score score}) async {
     final ball = score.ball.value;
-    final batter = score.batter.value;
-    final scoreboard = score.socreboard.value;
+    final batters = score.batter;
+    final scoreboards = score.socreboard;
     final partnershipBatterInfo = score.partnershipBatterInfo.value;
     final partnershipInfo = score.partnerShipInfo.value;
     final partnership = score.partnership.value;
@@ -621,12 +840,15 @@ class ScoreService {
     if (ball != null) {
       await _ballService.deleteBall(ball.id);
     }
-    if (batter != null) {
-      await _batterService.deleteBatter(batter.id);
-    }
-    if (scoreboard != null) {
-      await _scoreboardService.deleteScorebaord(scoreboard.id);
-    }
+
+    print('battter ids');
+    print(batters.map((e) => e.id));
+    await _batterService.deleteBatters(batters.map((e) => e.id).toList());
+
+    print('scoreboard ids');
+    print(scoreboards.map((e) => e.id));
+    await _scoreboardService
+        .deleteScorebaords(scoreboards.map((e) => e.id).toList());
 
     if (partnershipBatterInfo != null) {
       await _partnershipBatterInfoService

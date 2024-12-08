@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/screens/match_center/batsman/select_batsman_screen.dart';
 import 'package:runs/screens/match_center/batsman/create_player_screen.dart';
+import 'package:runs/screens/match_center/score_page/run_out_screen.dart';
 import 'package:runs/screens/screens.dart';
 
 final router = GoRouter(
@@ -49,6 +50,14 @@ final router = GoRouter(
       builder: (context, state) {
         final teamId = state.pathParameters['teamId'];
         return CreatePlayerScreen(teamId: int.parse(teamId!));
+      },
+    ),
+    GoRoute(
+      path: '/runout',
+      builder: (context, state) {
+        final score = state.extra as Score;
+
+        return RunOutScreen(score: score);
       },
     ),
   ],

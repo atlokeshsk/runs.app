@@ -27,6 +27,9 @@ class Batter {
   @Backlink(to: 'batters')
   final player = IsarLink<Player>();
 
+  @Backlink(to: 'batter')
+  final score = IsarLink<Score>();
+
   final match = IsarLink<Match>();
 
   void addRuns({required Runs runs}) {

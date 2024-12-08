@@ -702,7 +702,9 @@ class OutScreen extends StatelessWidget {
               ),
             ),
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                context.push('/runout', extra: score);
+              },
               child: Text(
                 'Run Out',
                 style: textStyle,

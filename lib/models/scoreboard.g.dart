@@ -41,6 +41,13 @@ const ScoreBoardSchema = CollectionSchema(
       name: r'match',
       target: r'Match',
       single: true,
+    ),
+    r'score': LinkSchema(
+      id: -4655852713621180948,
+      name: r'score',
+      target: r'Score',
+      single: true,
+      linkName: r'socreboard',
     )
   },
   embeddedSchemas: {},
@@ -100,13 +107,14 @@ Id _scoreBoardGetId(ScoreBoard object) {
 }
 
 List<IsarLinkBase<dynamic>> _scoreBoardGetLinks(ScoreBoard object) {
-  return [object.player, object.match];
+  return [object.player, object.match, object.score];
 }
 
 void _scoreBoardAttach(IsarCollection<dynamic> col, Id id, ScoreBoard object) {
   object.id = id;
   object.player.attach(col, col.isar.collection<Player>(), r'player', id);
   object.match.attach(col, col.isar.collection<Match>(), r'match', id);
+  object.score.attach(col, col.isar.collection<Score>(), r'score', id);
 }
 
 extension ScoreBoardQueryWhereSort
@@ -324,6 +332,19 @@ extension ScoreBoardQueryLinks
   QueryBuilder<ScoreBoard, ScoreBoard, QAfterFilterCondition> matchIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'match', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<ScoreBoard, ScoreBoard, QAfterFilterCondition> score(
+      FilterQuery<Score> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'score');
+    });
+  }
+
+  QueryBuilder<ScoreBoard, ScoreBoard, QAfterFilterCondition> scoreIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'score', 0, true, 0, true);
     });
   }
 }

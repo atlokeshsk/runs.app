@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:runs/models/models.dart';
 import 'player.dart';
 import 'match.dart';
 
@@ -15,4 +16,7 @@ class ScoreBoard {
   final player = IsarLink<Player>();
 
   final match = IsarLink<Match>();
+
+  @Backlink(to: 'socreboard')
+  final score = IsarLink<Score>();
 }
