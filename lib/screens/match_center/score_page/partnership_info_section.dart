@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:runs/main.dart';
+
 import 'package:runs/models/models.dart';
 
 import 'package:runs/services/services.dart';
@@ -18,7 +18,6 @@ class PartnershipSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final partnershipService = context.read<PartnershipService>();
-    final scale = context.read<ScalingProvider>().scaleFactor;
     return FutureBuilder(
       future: partnershipService.entryExists(
           players: score.playersOnCrease.toList(), matchId: match.id),

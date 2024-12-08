@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:runs/models/fall_of_wickets.dart';
+
 import 'package:runs/models/models.dart';
 import 'package:runs/screens/match_center/score_page/control_section/control_section.dart';
 import 'package:runs/services/services.dart';
@@ -841,12 +841,8 @@ class ScoreService {
       await _ballService.deleteBall(ball.id);
     }
 
-    print('battter ids');
-    print(batters.map((e) => e.id));
     await _batterService.deleteBatters(batters.map((e) => e.id).toList());
 
-    print('scoreboard ids');
-    print(scoreboards.map((e) => e.id));
     await _scoreboardService
         .deleteScorebaords(scoreboards.map((e) => e.id).toList());
 

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:runs/main.dart';
@@ -12,7 +10,7 @@ class FallOfWicketsInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final match = context.read<Match>();
     final fallOfWickets = match.fallOfWickets;
-    if (fallOfWickets.length == 0) {
+    if (fallOfWickets.isEmpty) {
       return SizedBox.shrink();
     }
     final scale = context.read<ScalingProvider>().scaleFactor;

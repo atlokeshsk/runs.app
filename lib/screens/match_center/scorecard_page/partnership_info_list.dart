@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:runs/main.dart';
 import 'package:runs/models/models.dart';
 import 'package:runs/screens/match_center/score_page/partnership_info_section.dart';
-import 'package:runs/services/score_service.dart';
 
 class PartnerShipInfoList extends StatelessWidget {
   const PartnerShipInfoList({super.key});

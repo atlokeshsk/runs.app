@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
-import 'package:runs/main.dart';
-import 'package:runs/models/batter.dart';
+
 import 'package:runs/models/models.dart';
 
 class ScoreboardInfo extends StatelessWidget {

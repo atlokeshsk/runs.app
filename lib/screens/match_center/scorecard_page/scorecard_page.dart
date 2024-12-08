@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:runs/main.dart';
-import 'package:runs/screens/match_center/score_page/partnership_info_section.dart';
+
 import 'package:runs/screens/match_center/scorecard_page/fall_of_wickets_info.dart';
 import 'package:runs/screens/match_center/scorecard_page/partnership_info_list.dart';
 import 'package:runs/screens/match_center/scorecard_page/scoreboard_info.dart';

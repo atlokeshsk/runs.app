@@ -1,7 +1,5 @@
 import 'package:isar/isar.dart';
 import 'package:runs/models/models.dart';
-import 'player.dart';
-import 'match.dart';
 
 part 'scoreboard.g.dart';
 

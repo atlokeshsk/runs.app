@@ -45,11 +45,11 @@ class _RunOutScreenState extends State<RunOutScreen> {
               backgroundColor: isSelected == false
                   ? Colors.transparent.withOpacity(0.1)
                   : Colors.transparent,
+              radius: 25 * scale,
               child: Text(
                 player.name.getInitials(),
                 style: TextStyle(fontSize: 20 * scale),
               ),
-              radius: 25 * scale,
             ),
             SizedBox(height: 10 * scale),
             Text(

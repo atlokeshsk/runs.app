@@ -81,7 +81,6 @@ class MainButtonSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scale = context.read<ScalingProvider>().scaleFactor;
     return Center(
       child: GridView.count(
         crossAxisCount: 5,
