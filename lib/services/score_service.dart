@@ -668,6 +668,8 @@ class ScoreService {
           );
         }
 
+        newscore.wicketsFall++;
+
         switch (type) {
           case RunButtonType.runs:
             newscore.ballsBowed++;

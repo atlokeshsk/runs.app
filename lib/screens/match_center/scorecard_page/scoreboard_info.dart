@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
+import 'package:runs/main.dart';
 
 import 'package:runs/models/models.dart';
 
@@ -12,7 +13,7 @@ class ScoreboardInfo extends StatelessWidget {
     final match = context.read<Match>();
 
     final scoreboard = match.scoreboards;
-
+    final scale = context.read<ScalingProvider>().scaleFactor;
     // Adjust multiplier as needed
     final headerStyle = TextStyle(
       fontSize: 17,
@@ -24,6 +25,7 @@ class ScoreboardInfo extends StatelessWidget {
       children: [
         Row(
           children: [
+            Expanded(child: Text('Pos', style: headerStyle)),
             Expanded(flex: 3, child: Text('Batsman', style: headerStyle)),
             Expanded(child: Center(child: Text('R', style: headerStyle))),
             Expanded(child: Center(child: Text('B', style: headerStyle))),
@@ -33,7 +35,7 @@ class ScoreboardInfo extends StatelessWidget {
             Expanded(child: Center(child: Text('SR', style: headerStyle))),
           ],
         ),
-        Divider(),
+        SizedBox(height: 10 * scale),
         ListView.separated(
           padding: EdgeInsets.all(0),
           shrinkWrap: true,
@@ -45,7 +47,11 @@ class ScoreboardInfo extends StatelessWidget {
                 .player((q) => q.idEqualTo(player.id))
                 .sortByDateTimeDesc()
                 .findFirstSync()!;
-            return ScoreboardRow(batter: batter, player: player);
+            return ScoreboardRow(
+              batter: batter,
+              player: player,
+              index: index + 1,
+            );
           },
           itemCount: scoreboard.length,
           separatorBuilder: (BuildContext context, int index) {
@@ -58,14 +64,24 @@ class ScoreboardInfo extends StatelessWidget {
 }
 
 class ScoreboardRow extends StatelessWidget {
-  const ScoreboardRow({super.key, required this.batter, required this.player});
+  const ScoreboardRow(
+      {super.key,
+      required this.batter,
+      required this.player,
+      required this.index});
   final Batter batter;
   final Player player;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
+        Expanded(
+          child: Text(
+            index.toString(),
+          ),
+        ),
         Expanded(
           flex: 3,
           child: Column(

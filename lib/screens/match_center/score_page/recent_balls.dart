@@ -89,11 +89,13 @@ class BallAvatar extends StatelessWidget {
         radius: 18, // Slightly larger for better visibility
         backgroundColor: color,
         foregroundColor: Colors.white,
-        child: Text(
-          ball.name,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
+        child: FittedBox(
+          child: Text(
+            ball.name,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
