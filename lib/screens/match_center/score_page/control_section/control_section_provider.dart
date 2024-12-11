@@ -10,7 +10,8 @@ enum Control {
   noballBye,
   selectBatsman,
   selectStriker,
-  out
+  out,
+  endInnings
 }
 
 enum Modifier {

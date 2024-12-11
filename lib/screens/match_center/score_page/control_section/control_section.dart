@@ -36,6 +36,8 @@ class ControlSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scale = context.read<ScalingProvider>().scaleFactor;
+    final score = context.read<Score>();
+    final match = score.match.value!;
     return Container(
       color: Colors.orange.shade500,
       width: double.infinity,
@@ -44,6 +46,16 @@ class ControlSection extends StatelessWidget {
         child: Builder(
           builder: (context) {
             var controlState = context.watch<ControlSectionState>();
+
+            if (match.innings == Innings.second &&
+                score.runs >= match.target!) {
+              return EndInnings(heading: 'Target Achieved');
+            }
+
+            // overs complete
+            if (score.ballsBowed == match.overs * 6) {
+              return EndInnings(heading: 'overs complete');
+            }
 
             switch (controlState.state) {
               case Control.mainMenu:
@@ -66,6 +78,8 @@ class ControlSection extends StatelessWidget {
                 return SelectStriker();
               case Control.out:
                 return OutScreen();
+              case Control.endInnings:
+                return EndInnings();
             }
           },
         ),
@@ -718,6 +732,49 @@ class OutScreen extends StatelessWidget {
             ),
           ],
         )
+      ],
+    );
+  }
+}
+
+class EndInnings extends StatelessWidget {
+  const EndInnings({super.key, this.heading = ''});
+  final String heading;
+
+  @override
+  Widget build(BuildContext context) {
+    final score = context.read<Score>();
+    final match = score.match.value!;
+    final scoreService = context.read<ScoreService>();
+    final textStyle = TextStyle(color: Colors.black);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text(heading),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            OutlinedButton(
+              onPressed: () async {},
+              child: Text(
+                'End Innings',
+                style: textStyle,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () async {
+                if (match.score.length == 1) {
+                  return;
+                }
+                await scoreService.undoScore(score: score);
+              },
+              child: Text(
+                'Undo',
+                style: textStyle,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
