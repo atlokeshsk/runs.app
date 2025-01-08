@@ -201,9 +201,13 @@ class _SelectionListState extends State<SelectionList> {
       batsmans.sort(
         (a, b) {
           if (score.playersOnCrease.contains(a) &&
-              !score.playersOnCrease.contains(b)) return -1;
+              !score.playersOnCrease.contains(b)) {
+            return -1;
+          }
           if (!score.playersOnCrease.contains(a) &&
-              score.playersOnCrease.contains(b)) return 1;
+              score.playersOnCrease.contains(b)) {
+            return 1;
+          }
           return 0;
         },
       );
